@@ -1,14 +1,17 @@
 package classified.repository.impl;
 
 import classified.dto.user.UserStatisticsDto;
+import classified.entity.Address;
 import classified.entity.User;
 import classified.exception.business.ResourceNotFoundException;
+import classified.exception.business.ResourceRemovedException;
 import classified.exception.technical.DatabaseException;
 import jakarta.persistence.NoResultException;
 import org.springframework.stereotype.Repository;
 import classified.repository.AbstractRepository;
 import classified.repository.UserRepository;
 
+import java.util.HashSet;
 import java.util.Optional;
 
 @Repository
@@ -19,15 +22,32 @@ public class UserRepositoryImpl extends AbstractRepository<User, Long> implement
     }
 
     @Override
+    public void delete(User user) {
+        execute("delete",
+                em -> {
+                    user.setDeleted(true);
+                    User curUser = em.contains(user) ? user : em.merge(user);
+                    curUser.setAddress(new HashSet<>());
+                    curUser.setName("null");
+                    curUser.setEmail("deleted_" + user.getId() + "@internal");
+                    curUser.setLastName("null");
+                    curUser.setPassword("");
+                    curUser.setPhone("+70000000000");
+                },
+                "classified.entity=" + user);
+    }
+
+    @Override
     public Optional<User> findByEmail(String email) {
         return executeWithResult("findByEmail",
                 em -> {
                     try {
-                        return Optional.of(
-                                em.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
-                                        .setParameter("email", email)
-                                        .getSingleResult()
-                        );
+                        User user = em.createQuery("SELECT u FROM User u WHERE u.email = :email", User.class)
+                                .setParameter("email", email)
+                                .getSingleResult();
+                        if (user.isDeleted())
+                            throw new ResourceRemovedException("User", "email", email);
+                        return Optional.of(user);
                     } catch (NoResultException e) {
                         return Optional.empty();
                     } catch (Exception e) {

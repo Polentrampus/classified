@@ -14,7 +14,7 @@ public interface PromotionMapper {
     @Mapping(target = "ad", ignore = true)
     @Mapping(target = "startDate", ignore = true)
     @Mapping(target = "endDate", ignore = true)
-    @Mapping(target = "isActive", ignore = true)
+    @Mapping(target = "active", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     Promotion toEntity(PromotionCreateRequest request);
 

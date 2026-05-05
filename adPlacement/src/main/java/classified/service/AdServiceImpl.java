@@ -39,18 +39,14 @@ public class AdServiceImpl implements AdService {
     @Override
     public AdResponse createAd(AdCreateRequest request, UserDetailsImpl userDetails) {
         // 1) Маппим базовые поля
-        if (request.getSellerId().equals(userDetails.getId()) || userDetails.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-            Ad ad = adMapper.toEntity(request);
-            // 2) Загружаем и устанавливаем связанные сущности
-            User seller = userRepository
-                    .findById(userDetails.getId())
-                    .orElseThrow(() -> new ResourceNotFoundException("User", "id", userDetails.getId()));
-            ad.setSeller(seller);
-            updateRelatedEntities(request.getAdTypeId(), request.getAddressId(), ad);
-            return adMapper.toResponse(adRepository.save(ad));
-        } else
-            throw new AccessDeniedException("You can only edit your own ads");
+        Ad ad = adMapper.toEntity(request);
+        // 2) Загружаем и устанавливаем связанные сущности
+        User seller = userRepository
+                .findById(userDetails.getId())
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", userDetails.getId()));
+        ad.setSeller(seller);
+        updateRelatedEntities(request.getAdTypeId(), request.getAddressId(), ad);
+        return adMapper.toResponse(adRepository.save(ad));
 
     }
 

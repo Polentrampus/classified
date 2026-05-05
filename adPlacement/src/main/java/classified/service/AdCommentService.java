@@ -43,13 +43,10 @@ public class AdCommentService {
                     "Can only review completed orders");
         }
 
-        // 2. Маппим и сохраняем (unique constraint на order_id защитит от дубликата)
         AdComment comment = adCommentMapper.toEntity(request);
         comment.setOrder(order);
-        // rating и content уже замаплены из request
 
-        AdComment saved = adCommentRepository.save(comment);
-        return adCommentMapper.toResponse(saved);
+        return adCommentMapper.toResponse(adCommentRepository.save(comment));
     }
 
     /**

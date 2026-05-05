@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +32,7 @@ public class OrderController {
      */
     @Operation(summary = "Создать заказ")
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     public ResponseEntity<OrderResponse> createOrder(
             @RequestBody @Valid OrderCreateRequest request,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -48,6 +50,7 @@ public class OrderController {
      */
     @Operation(summary = "Получить заказ по ID")
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     public ResponseEntity<OrderResponse> getOrder(@PathVariable Long id) {
         return ResponseEntity.ok(orderService.getOrder(id));
     }
@@ -57,6 +60,7 @@ public class OrderController {
      */
     @Operation(summary = "Мои покупки")
     @GetMapping("/my-buys")
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     public ResponseEntity<List<OrderResponse>> getMyBuys(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.ok(orderService.getOrdersByBuyerId(userDetails.getId()));
     }
@@ -66,6 +70,7 @@ public class OrderController {
      */
     @Operation(summary = "Мои продажи")
     @GetMapping("/my-sales")
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     public ResponseEntity<List<OrderResponse>> getMySales(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.ok(orderService.getOrdersBySellerId(userDetails.getId()));
     }
@@ -75,6 +80,7 @@ public class OrderController {
      */
     @Operation(summary = "Изменить статус заказа")
     @PatchMapping("/{id}/status")
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     public ResponseEntity<Void> changeStatus(
             @PathVariable Long id,
             @RequestParam OrderStatus newStatus) {

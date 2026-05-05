@@ -18,6 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,6 +45,7 @@ public class AdController {
             @ApiResponse(responseCode = "401", description = "Неавторизован")
     })
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     public ResponseEntity<AdResponse> createAd(@RequestBody @Valid AdCreateRequest request,
                                                @AuthenticationPrincipal UserDetailsImpl userDetails) {
         AdResponse response = adService.createAd(request, userDetails);
@@ -58,6 +60,7 @@ public class AdController {
      */
     @Operation(summary = "Обновить объявление")
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     public ResponseEntity<AdResponse> updateAd(
             @PathVariable Long id,
             @RequestBody @Valid AdUpdateRequest request,
@@ -70,6 +73,7 @@ public class AdController {
      */
     @Operation(summary = "Получить объявление по ID")
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     public ResponseEntity<AdResponse> getAd(@PathVariable Long id) {
         return ResponseEntity.ok(adService.getAd(id));
     }
@@ -79,6 +83,7 @@ public class AdController {
      */
     @Operation(summary = "Удалить объявление")
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     public ResponseEntity<Void> deleteAd(@PathVariable Long id,
                                          @AuthenticationPrincipal UserDetailsImpl userDetails) {
         adService.deleteAd(id,userDetails);
@@ -90,6 +95,7 @@ public class AdController {
      */
     @Operation(summary = "Мои объявления")
     @GetMapping("/my")
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     public ResponseEntity<List<AdResponse>> getMyAds(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.ok(adService.getAllAdBySellerId(userDetails.getId()));
     }
@@ -102,6 +108,7 @@ public class AdController {
      */
     @Operation(summary = "Поиск объявлений")
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     public ResponseEntity<PagedResult<AdResponse>> searchAds(
             @RequestParam(required = false) String title,
             @RequestParam(required = false) BigDecimal minPrice,
@@ -136,6 +143,7 @@ public class AdController {
      */
     @Operation(summary = "Изменить статус объявления")
     @PatchMapping("/{id}/status")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> changeStatus(
             @PathVariable Long id,
             @RequestParam AdStatus newStatus,

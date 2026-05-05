@@ -14,6 +14,4 @@ import lombok.Setter;
 public class AddressCreateRequest {
     private Long userId;
     private Long cityId;
-    private String street;
-    private String house;
 }

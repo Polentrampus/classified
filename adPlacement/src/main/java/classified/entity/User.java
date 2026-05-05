@@ -8,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 /// Реализовала для витрины данных, но нарушает принцип разделения на слои
 @SqlResultSetMapping(
@@ -70,6 +71,9 @@ public class User {
     /// TODO: как то исправить то, что в отношении 1:1 игнорируется ленивая зависимость и тянется все из БД
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private UserRating userRating;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private Set<Address> address;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

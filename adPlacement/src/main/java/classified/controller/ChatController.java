@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +33,7 @@ public class ChatController {
             @ApiResponse(responseCode = "401", description = "Неавторизован")
     })
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     ResponseEntity<ChatResponse> createChat(@RequestBody ChatCreateRequest request,
                                             @AuthenticationPrincipal UserDetailsImpl userDetails){
         ChatResponse response = chatService.create(request, userDetails);

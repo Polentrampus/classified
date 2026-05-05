@@ -74,7 +74,6 @@ public class PromotionService {
      * Получить активное промо объявления
      */
     public PromotionResponse getActiveByAdId(Long adId) {
-        // Проверяем существование объявления
         adRepository.findById(adId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ad", "id", adId));
 

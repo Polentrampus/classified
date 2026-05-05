@@ -34,9 +34,9 @@ public class MessageService {
 
     @Transactional
     public MessageResponse create(MessageCreateRequest request, UserDetailsImpl userDetails) {
-        Message message = messageMapper.toEntity(request);
-        if(!message.getSender().getId().equals(userDetails.getId()))
+        if(!request.getSenderId().equals(userDetails.getId()))
             throw new AccessDeniedException("You can only edit your own ads");
+        Message message = messageMapper.toEntity(request);
         updateRelatedEntities(request.getChatId(), request.getSenderId(),message);
         return messageMapper.toResponse(messageRepository.save(message));
     }

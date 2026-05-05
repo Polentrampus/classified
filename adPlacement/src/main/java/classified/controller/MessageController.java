@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,6 +33,7 @@ public class MessageController {
             @ApiResponse(responseCode = "401", description = "Неавторизован")
     })
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     ResponseEntity<MessageResponse> createMessage(@RequestBody MessageCreateRequest request,
                                                   @AuthenticationPrincipal UserDetailsImpl currentUser){
         MessageResponse response = messageService.create(request, currentUser);
@@ -47,6 +49,7 @@ public class MessageController {
             @ApiResponse(responseCode = "401", description = "Неавторизован")
     })
     @DeleteMapping("/{messageId}")
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     ResponseEntity<MessageResponse> delete(@PathVariable Long messageId,
                                            @AuthenticationPrincipal UserDetailsImpl currentUser){
         messageService.delete(messageId, currentUser);

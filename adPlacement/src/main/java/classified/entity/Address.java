@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "address")
@@ -27,9 +30,7 @@ public class Address {
     @JoinColumn(name = "city_id", nullable = false)
     private City city;
 
-    @Size(max = 250)
-    private String street;
-
-    @Size(max = 20)
-    private String house;
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 }

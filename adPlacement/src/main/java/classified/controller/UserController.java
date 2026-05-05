@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +33,7 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Неавторизован")
     })
     @GetMapping("/me")
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     public ResponseEntity<UserResponse> getMyProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.ok(userService.getProfile(userDetails.getId()));
     }
@@ -46,7 +48,9 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Невалидные данные"),
             @ApiResponse(responseCode = "401", description = "Неавторизован")
     })
+
     @PutMapping("/me")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<UserResponse> updateMyProfile(
             @RequestBody @Valid UserUpdateRequest request,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -66,6 +70,7 @@ public class UserController {
             @ApiResponse(responseCode = "401", description = "Неавторизован")
     })
     @PatchMapping("/me/password")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> changePassword(
             @RequestParam String oldPassword,
             @RequestParam String newPassword,
@@ -80,6 +85,7 @@ public class UserController {
      */
     @Operation(summary = "Получить свою статистику")
     @GetMapping("/me/statistics")
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     public ResponseEntity<?> getMyStatistics(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         return ResponseEntity.ok(userService.getUserStatistics(userDetails.getId()));
     }
@@ -94,6 +100,7 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Пользователь не найден")
     })
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getProfile(id));
     }

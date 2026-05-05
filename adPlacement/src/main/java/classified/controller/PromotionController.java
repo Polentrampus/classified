@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +38,7 @@ public class PromotionController {
             @ApiResponse(responseCode = "401", description = "Неавторизован")
     })
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     public ResponseEntity<PromotionResponse> create(
             @RequestBody @Valid PromotionCreateRequest request,
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -49,6 +51,7 @@ public class PromotionController {
     /**
      * Проверить статус продвижения объявления
      */
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     @Operation(summary = "Статус продвижения объявления")
     @GetMapping("/by-ad/{adId}")
     public ResponseEntity<PromotionResponse> getActiveByAdId(@PathVariable Long adId) {
@@ -58,6 +61,7 @@ public class PromotionController {
     /**
      * Деактивировать промо (отменить продвижение)
      */
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     @Operation(summary = "Отменить продвижение", description = "Владелец или админ может отменить продвижение")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Промо деактивировано"),
@@ -74,6 +78,7 @@ public class PromotionController {
     /**
      * Получить все типы промо (справочник)
      */
+    @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     @Operation(summary = "Справочник типов продвижения")
     @GetMapping("/types")
     public ResponseEntity<PromotionType[]> getTypes() {
