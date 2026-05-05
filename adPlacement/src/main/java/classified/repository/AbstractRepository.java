@@ -63,6 +63,7 @@ public abstract class AbstractRepository<T, ID> implements BaseRepository<T, ID>
         }
         if (result instanceof Boolean) return result.toString();
         if (result instanceof Number) return result.toString();
+
         return result.getClass().getSimpleName();
     }
 
@@ -79,6 +80,7 @@ public abstract class AbstractRepository<T, ID> implements BaseRepository<T, ID>
         return executeWithResult("findAll",
                 em -> em.createQuery("FROM " + entityClass.getSimpleName(), entityClass).getResultList(),
                 "без параметров");
+
     }
 
     @Override

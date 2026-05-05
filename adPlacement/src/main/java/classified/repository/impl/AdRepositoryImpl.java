@@ -1,12 +1,11 @@
 package classified.repository.impl;
 
-import classified.dto.AdSearchCriteria;
+import classified.dto.ad.AdSearchCriteria;
 import classified.entity.Ad;
-import classified.entity.AdStatus;
+import classified.entity.Promotion;
 import classified.entity.User;
 import classified.entity.UserRating;
 import classified.exception.business.FieldSortingException;
-import classified.exception.business.ResourceNotFoundException;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -23,53 +22,18 @@ import classified.util.pagination.PagedResult;
 import classified.util.pagination.PagingRequest;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 @Repository
 public class AdRepositoryImpl extends AbstractRepository<Ad, Long> implements AdRepository {
     private static final Set<String> ALLOWED_SORT_FIELDS = Set.of(
-            "price", "createdAt", "title", "status"
+            "price", "createdAt", "title", "status", "sellerRating"
     );
 
     protected AdRepositoryImpl() {
         super(Ad.class);
-    }
-
-    @Override
-    public BigDecimal getAdPrice(Long id) {
-        return executeWithResult("getAdPrice", em -> {
-            Optional<Ad> ad = super.findById(id);
-            if(ad.isEmpty()){
-                throw new ResourceNotFoundException("Ad", "id", id);
-            }
-            return ad.get().getPrice();
-        }, "id="+id);
-    }
-
-    @Override
-    public AdStatus checkStatusAd(Long id) {
-        return executeWithResult("checkStatusAd", em -> {
-            Optional<Ad> ad = super.findById(id);
-            if(ad.isEmpty()){
-                throw new ResourceNotFoundException("Ad", "id", id);
-            }
-            return ad.get().getStatus();
-        }, "id"+id);
-    }
-
-    @Override
-    public void setStatusAd(Long id, AdStatus status) {
-        execute("checkStatusAd", em -> {
-            Optional<Ad> ad = super.findById(id);
-            if(ad.isEmpty() || status == null){
-                throw new ResourceNotFoundException("Ad", "id", id);
-            }
-            ad.get().setStatus(status);
-        }, "id"+id);
     }
 
     @Override
@@ -82,9 +46,7 @@ public class AdRepositoryImpl extends AbstractRepository<Ad, Long> implements Ad
             Join<Ad, User> sellerJoin = ad.join("seller", JoinType.LEFT);
 
             List<Predicate> predicates = buildPredicates(criteria, cb, ad, sellerJoin);
-            if(predicates.isEmpty()){
-                query.where(predicates.toArray(new Predicate[0]));
-            }
+            query.where(predicates.toArray(new Predicate[0]));
 
             // сортировка:
             if(pageable.getSort().isSorted()){
@@ -113,8 +75,17 @@ public class AdRepositoryImpl extends AbstractRepository<Ad, Long> implements Ad
             Long total = em.createQuery(countQuery).getSingleResult();
 
             return new PagedResult<>(content, pageable.getPage(),pageable.getSize(), total);
-    }, "criteria=" + criteria + ", pageable=" + pageable);
- }
+        }, "criteria=" + criteria + ", pageable=" + pageable);
+    }
+
+    @Override
+    public List<Ad> findBySellerId(Long sellerId) {
+        return executeWithResult("findBySellerId",
+                em -> em.createQuery("SELECT a FROM Ad a WHERE a.seller.id = :sellerId", Ad.class)
+                        .setParameter("sellerId", sellerId)
+                        .getResultList(),
+                "sellerId=" + sellerId);
+    }
 
     private List<Predicate> buildPredicates(AdSearchCriteria criteria,
                                             CriteriaBuilder cb,
@@ -152,8 +123,23 @@ public class AdRepositoryImpl extends AbstractRepository<Ad, Long> implements Ad
                                    CriteriaBuilder cb,
                                    Root<Ad> adRoot,
                                    Join<Ad, User> sellerJoin){
+        // Создали список правил сортировки
         List<Order> orders = new ArrayList<>();
         Join<User, UserRating> ratingJoin = sellerJoin.join("userRating", JoinType.LEFT);
+        Join<Ad, Promotion> promotionJoin = adRoot.join("promotions", JoinType.LEFT);
+        // Добавляем условия к join
+        promotionJoin.on(
+                cb.and(
+                        cb.isTrue(promotionJoin.get("isActive")),
+                        cb.greaterThan(promotionJoin.get("endDate"), cb.currentTimestamp())
+                )
+        );
+
+        // Сначала добавляем сортировку по промо (всегда первое)
+        orders.add(cb.asc(cb.selectCase()
+                .when(cb.isNotNull(promotionJoin.get("id")), 0)
+                .otherwise(1)));
+
         pageable.getSort().getOrders().forEach(sortOrder -> {
             String property = sortOrder.field();
             // проверяем: поля сортировки те, по которым можно сортировать?
@@ -162,7 +148,7 @@ public class AdRepositoryImpl extends AbstractRepository<Ad, Long> implements Ad
             }
             Path<Object> path;
             if ("sellerRating".equals(property)) {
-                path = sellerJoin.get("rating");
+                path = ratingJoin.get("rating");
             } else {
                 path = adRoot.get(property);
             }

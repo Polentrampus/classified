@@ -34,7 +34,7 @@ public class AdCommentRepositoryImpl extends AbstractRepository<AdComment, Long>
     @Override
     public List<AdComment> findByAdId(Long adId) {
         return executeWithResult("findByAdId",
-                em -> em.createQuery("SELECT ac FROM AdComment ac WHERE ac.ad.id = :adId", AdComment.class)
+                em -> em.createQuery("SELECT ac FROM AdComment ac join ac.order o WHERE ac.order.ad.id = :adId", AdComment.class)
                         .setParameter("adId", adId)
                         .getResultList(),
                 "adId=" + adId);
@@ -56,7 +56,7 @@ public class AdCommentRepositoryImpl extends AbstractRepository<AdComment, Long>
     public Double getAverageRatingForAd(Long adId) {
         return executeWithResult("getAverageRatingForAd",
                 em -> {
-                    Double averageRating = em.createQuery("SELECT AVG(ac.rating) FROM AdComment ac WHERE ac.ad.id = :adId", Double.class)
+                    Double averageRating = em.createQuery("SELECT AVG(ac.rating) FROM AdComment ac join ac.order o WHERE ac.order.ad.id = :adId", Double.class)
                             .setParameter("adId", adId)
                             .getSingleResult();
                     return averageRating != null ? averageRating : 0.0;

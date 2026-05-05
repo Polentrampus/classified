@@ -1,4 +1,4 @@
-package classified.dto;
+package classified.dto.message;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,10 +11,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class UserRegistrationRequest {
-    private String name;
-    private String lastName;
-    private String email;
-    private String phone;
-    private String password;
+public class MessageUpdateRequest {
+    private Long chatId;
+    private Long senderId;
+    private String content;
 }

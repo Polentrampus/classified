@@ -1,4 +1,4 @@
-package classified.dto;
+package classified.dto.ad;
 
 import classified.entity.AdStatus;
 import lombok.Getter;
@@ -16,4 +16,5 @@ public class AdSearchCriteria {
     private Long sellerId;
     private Long adTypeId;
     private Double minSellerRating;
+    private Boolean promotedOnly;
 }

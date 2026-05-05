@@ -1,4 +1,4 @@
-package classified.dto;
+package classified.dto.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

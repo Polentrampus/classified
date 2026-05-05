@@ -2,8 +2,8 @@ package classified.controller;
 
 import classified.dto.AuthResponse;
 import classified.dto.LoginRequest;
-import classified.dto.UserRegistrationRequest;
-import classified.dto.UserResponse;
+import classified.dto.user.UserRegistrationRequest;
+import classified.dto.user.UserResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

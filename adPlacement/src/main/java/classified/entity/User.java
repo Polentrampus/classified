@@ -1,6 +1,6 @@
 package classified.entity;
 
-import classified.dto.UserStatisticsDto;
+import classified.dto.user.UserStatisticsDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/// Реализовала для витрины данных, но нарушает принцип разделения на слои
 @SqlResultSetMapping(
         name = "UserStatisticsMapping",
         classes = @ConstructorResult(
@@ -63,10 +64,10 @@ public class User {
     private String phone;
 
     @NotBlank
-    @Size(min = 60, max = 255)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String password;
 
+    /// TODO: как то исправить то, что в отношении 1:1 игнорируется ленивая зависимость и тянется все из БД
     @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
     private UserRating userRating;
 
@@ -76,4 +77,8 @@ public class User {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean deleted = false;
 }

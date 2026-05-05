@@ -3,9 +3,11 @@ package classified.repository.impl;
 import classified.entity.Address;
 import classified.repository.AbstractRepository;
 import classified.repository.AddressRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public class AddressRepositoryImpl extends AbstractRepository<Address, Long> implements AddressRepository {
     protected AddressRepositoryImpl() {
         super(Address.class);

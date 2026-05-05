@@ -26,10 +26,6 @@ public class AdComment {
     @JoinColumn(name = "order_id", nullable = false, unique = true)
     private Order order;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ad_id")
-    private Ad ad;
-
     @NotNull
     @Column(nullable = false)
     private Integer rating;

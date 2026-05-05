@@ -1,6 +1,7 @@
 package classified.repository.impl;
 
 import classified.entity.Chat;
+import classified.entity.ChatParticipant;
 import classified.repository.AbstractRepository;
 import classified.repository.ChatRepository;
 import org.springframework.stereotype.Repository;

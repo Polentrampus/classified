@@ -1,6 +1,6 @@
 package classified.repository.impl;
 
-import classified.dto.UserStatisticsDto;
+import classified.dto.user.UserStatisticsDto;
 import classified.entity.User;
 import classified.exception.business.ResourceNotFoundException;
 import classified.exception.technical.DatabaseException;
@@ -29,7 +29,7 @@ public class UserRepositoryImpl extends AbstractRepository<User, Long> implement
                                         .getSingleResult()
                         );
                     } catch (NoResultException e) {
-                        throw new ResourceNotFoundException("User", "email", email);
+                        return Optional.empty();
                     } catch (Exception e) {
                         throw new DatabaseException(email, e);
                     }

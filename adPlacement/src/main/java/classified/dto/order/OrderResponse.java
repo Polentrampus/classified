@@ -1,6 +1,6 @@
-package classified.dto;
+package classified.dto.order;
 
-import classified.entity.AdStatus;
+import classified.entity.OrderStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,17 +15,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AdResponse {
+public class OrderResponse {
     private Long id;
-    private String title;
-    private String description;
-    private Long adTypeId;
-    private BigDecimal price;
-    private Integer quantity;
-    private AdStatus adStatus;
+    private Long adId;
+    private Long buyerId;
     private Long sellerId;
-    private Long addressId;
+    private Integer quantity;
+    private BigDecimal totalPrice;
+    private OrderStatus status;
     private LocalDateTime createdAt;
-    private LocalDateTime updateAt;
-
+    private LocalDateTime updatedAt;
+    private LocalDateTime completedAt;
 }

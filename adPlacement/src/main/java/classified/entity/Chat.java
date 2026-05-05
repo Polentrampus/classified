@@ -30,7 +30,6 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class Chat {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -45,5 +44,23 @@ public class Chat {
 
     // Связь через промежуточную сущность
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private Set<ChatParticipant> participants = new HashSet<>();
+
+    public void addParticipant(User user) {
+        ChatParticipant participant = new ChatParticipant();
+
+        // Создаём составной ключ
+        ChatParticipantId id = new ChatParticipantId();
+        id.setChatId(this.id);
+        id.setUserId(user.getId());
+        participant.setId(id);
+
+        // Устанавливаем связи
+        participant.setChat(this);
+        participant.setUser(user);
+        participant.setJoinedAt(LocalDateTime.now());
+
+        participants.add(participant);
+    }
 }

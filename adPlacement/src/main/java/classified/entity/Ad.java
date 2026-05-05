@@ -84,12 +84,12 @@ public class Ad {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @OneToMany(mappedBy = "ad", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "ad", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<AdImage> images = new ArrayList<>();
 
-    @OneToMany(mappedBy = "ad")
+    @OneToMany(mappedBy = "ad", fetch = FetchType.LAZY)
     @Builder.Default
-    private List<AdComment> comments = new ArrayList<>();
+    private List<Promotion> promotions = new ArrayList<>();
 }
 

@@ -1,6 +1,6 @@
 package classified.repository;
 
-import classified.dto.UserStatisticsDto;
+import classified.dto.user.UserStatisticsDto;
 import classified.entity.User;
 
 import java.util.Optional;

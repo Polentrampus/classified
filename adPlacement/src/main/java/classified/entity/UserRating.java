@@ -20,6 +20,7 @@ public class UserRating {
     @Column(name = "user_id")
     private Long userId;
 
+    /// TODO: как то исправить то, что в отношении 1:1 игнорируется ленивая зависимость и тянется все из БД
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "user_id")

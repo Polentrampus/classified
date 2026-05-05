@@ -1,4 +1,4 @@
-package classified.dto;
+package classified.dto.ad;
 
 import classified.entity.AdStatus;
 import lombok.AllArgsConstructor;
@@ -8,18 +8,24 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AdUpdateRequest {
+public class AdResponse {
+    private Long id;
     private String title;
     private String description;
     private Long adTypeId;
     private BigDecimal price;
     private Integer quantity;
     private AdStatus adStatus;
+    private Long sellerId;
     private Long addressId;
+    private LocalDateTime createdAt;
+    private LocalDateTime updateAt;
+
 }

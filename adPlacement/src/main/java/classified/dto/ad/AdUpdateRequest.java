@@ -1,4 +1,4 @@
-package classified.dto;
+package classified.dto.ad;
 
 import classified.entity.AdStatus;
 import lombok.AllArgsConstructor;
@@ -14,13 +14,12 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class AdCreateRequest {
+public class AdUpdateRequest {
     private String title;
     private String description;
     private Long adTypeId;
     private BigDecimal price;
     private Integer quantity;
     private AdStatus adStatus;
-    private Long sellerId;
     private Long addressId;
 }
