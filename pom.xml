@@ -208,7 +208,6 @@
                     <version>3.6.0</version>
                     <configuration>
                         <configLocation>checkstyle-config/checkstyle.xml</configLocation>
-                        <suppressionsLocation>checkstyle-config/suppressions.xml</suppressionsLocation>
                         <consoleOutput>true</consoleOutput>
                         <failsOnError>true</failsOnError>
                         <includeTestSourceDirectory>true</includeTestSourceDirectory>

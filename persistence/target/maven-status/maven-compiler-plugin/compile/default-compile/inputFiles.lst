@@ -1,0 +1,14 @@
+/home/polentrampus/my_program_debian/classified/persistence/src/main/java/com/classified/impl/AbstractRepository.java
+/home/polentrampus/my_program_debian/classified/persistence/src/main/java/com/classified/impl/AdCategoryRepositoryImpl.java
+/home/polentrampus/my_program_debian/classified/persistence/src/main/java/com/classified/impl/AdCommentRepositoryImpl.java
+/home/polentrampus/my_program_debian/classified/persistence/src/main/java/com/classified/impl/AdImageRepositoryImpl.java
+/home/polentrampus/my_program_debian/classified/persistence/src/main/java/com/classified/impl/AdRepositoryImpl.java
+/home/polentrampus/my_program_debian/classified/persistence/src/main/java/com/classified/impl/AdTypeRepositoryImpl.java
+/home/polentrampus/my_program_debian/classified/persistence/src/main/java/com/classified/impl/AddressRepositoryImpl.java
+/home/polentrampus/my_program_debian/classified/persistence/src/main/java/com/classified/impl/ChatRepositoryImpl.java
+/home/polentrampus/my_program_debian/classified/persistence/src/main/java/com/classified/impl/CityRepositoryImpl.java
+/home/polentrampus/my_program_debian/classified/persistence/src/main/java/com/classified/impl/MessageRepositoryImpl.java
+/home/polentrampus/my_program_debian/classified/persistence/src/main/java/com/classified/impl/OrderRepositoryImpl.java
+/home/polentrampus/my_program_debian/classified/persistence/src/main/java/com/classified/impl/PromotionRepositoryImpl.java
+/home/polentrampus/my_program_debian/classified/persistence/src/main/java/com/classified/impl/RoleRepositoryImpl.java
+/home/polentrampus/my_program_debian/classified/persistence/src/main/java/com/classified/impl/UserRepositoryImpl.java

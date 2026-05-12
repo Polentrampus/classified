@@ -1,0 +1,12 @@
+com/classified/controller/AddressController.class
+com/classified/controller/RoleController.class
+com/classified/GlobalExceptionHandler.class
+com/classified/controller/UserController.class
+com/classified/controller/MessageController.class
+com/classified/controller/AdCommentController.class
+com/classified/controller/AuthenticationController.class
+com/classified/controller/AdController.class
+com/classified/controller/PromotionController.class
+com/classified/controller/ChatController.class
+com/classified/config/SwaggerConfig.class
+com/classified/controller/OrderController.class

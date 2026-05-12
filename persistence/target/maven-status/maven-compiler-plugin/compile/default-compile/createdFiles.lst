@@ -1,0 +1,14 @@
+com/classified/impl/AdCommentRepositoryImpl.class
+com/classified/impl/AdImageRepositoryImpl.class
+com/classified/impl/AbstractRepository.class
+com/classified/impl/AdCategoryRepositoryImpl.class
+com/classified/impl/AdRepositoryImpl.class
+com/classified/impl/AdTypeRepositoryImpl.class
+com/classified/impl/CityRepositoryImpl.class
+com/classified/impl/AddressRepositoryImpl.class
+com/classified/impl/RoleRepositoryImpl.class
+com/classified/impl/UserRepositoryImpl.class
+com/classified/impl/ChatRepositoryImpl.class
+com/classified/impl/OrderRepositoryImpl.class
+com/classified/impl/PromotionRepositoryImpl.class
+com/classified/impl/MessageRepositoryImpl.class
