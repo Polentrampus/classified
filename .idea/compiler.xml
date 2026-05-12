@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
+    <excludeFromCompile>
+      <directory url="file://$PROJECT_DIR$/mapper/src/main/resources/archetype-resources" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/app/src/main/resources/archetype-resources" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/persistence/src/main/resources/archetype-resources" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/security/src/main/resources/archetype-resources" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/service/src/main/resources/archetype-resources" includeSubdirectories="true" />
+      <directory url="file://$PROJECT_DIR$/web/src/main/resources/archetype-resources" includeSubdirectories="true" />
+    </excludeFromCompile>
     <annotationProcessing>
       <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
@@ -8,7 +16,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
       </profile>
-      <profile name="Annotation profile for adPlacement Maven Webapp" enabled="true">
+      <profile name="Annotation profile for Classified Ads Platform" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -16,14 +24,49 @@
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.32/lombok-1.18.32.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.5.5.Final/mapstruct-processor-1.5.5.Final.jar" />
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.32/lombok-1.18.32.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.5.5.Final/mapstruct-processor-1.5.5.Final.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok-mapstruct-binding/0.2.0/lombok-mapstruct-binding-0.2.0.jar" />
         </processorPath>
-        <module name="adPlacement" />
+        <module name="classified-web" />
+        <module name="classified-common" />
+        <module name="classified-domain" />
+        <module name="classified-service" />
+        <module name="classified-dto" />
+        <module name="classified-app" />
+        <module name="classified-mapper" />
+        <module name="classified-security" />
+        <module name="classified-persistence" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="adPlacement" target="17" />
+      <module name="app" target="1.5" />
+      <module name="common" target="17" />
+      <module name="domain" target="17" />
+      <module name="dto" target="17" />
+      <module name="mapper" target="1.5" />
+      <module name="persistence" target="1.5" />
+      <module name="security" target="1.5" />
+      <module name="service" target="1.5" />
+      <module name="web" target="1.5" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="adPlacement" options="-parameters" />
+      <module name="classified-app" options="-parameters" />
+      <module name="classified-common" options="-parameters" />
+      <module name="classified-domain" options="-parameters" />
+      <module name="classified-dto" options="-parameters" />
+      <module name="classified-mapper" options="-parameters" />
+      <module name="classified-persistence" options="-parameters" />
+      <module name="classified-security" options="-parameters" />
+      <module name="classified-service" options="-parameters" />
+      <module name="classified-web" options="-parameters" />
+      <module name="common" options="-parameters" />
+      <module name="domain" options="-parameters" />
+      <module name="dto" options="-parameters" />
     </option>
   </component>
 </project>

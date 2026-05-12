@@ -1,0 +1,46 @@
+# classified/docker-compose.yml
+version: '3.8'
+
+services:
+  # ===== POSTGRESQL =====
+  postgres:
+    image: postgres:15-alpine
+    container_name: classified-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: classified
+      POSTGRES_USER: classified_user
+      POSTGRES_PASSWORD: classified_pass
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U classified_user -d classified"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ===== SPRING BOOT ПРИЛОЖЕНИЕ =====
+  app:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    container_name: classified-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/classified
+      SPRING_DATASOURCE_USERNAME: classified_user
+      SPRING_DATASOURCE_PASSWORD: classified_pass
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      JWT_SECRET: ${JWT_SECRET:-mySuperSecretKeyForJWTThatIsAtLeast32BytesLong}
+      JWT_EXPIRATION_MS: ${JWT_EXPIRATION_MS:-3600000}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
+    name: classified-postgres-data
