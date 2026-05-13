@@ -47,7 +47,6 @@ class JwtAuthFilterTest {
 
     @Test
     void shouldAuthenticateValidToken() throws ServletException, IOException {
-        // given
         String token = "valid.jwt.token";
         String email = "test@example.com";
         UserDetailsImpl userDetails = new UserDetailsImpl(
@@ -64,10 +63,8 @@ class JwtAuthFilterTest {
         when(userDetailsService.loadUserByUsername(email)).thenReturn(userDetails);
         when(jwtService.isTokenValid(token, userDetails)).thenReturn(true);
 
-        // when — вызываем публичный doFilter, а не protected doFilterInternal
         jwtAuthFilter.doFilter(request, response, filterChain);
 
-        // then
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNotNull();
         assertThat(SecurityContextHolder.getContext().getAuthentication().getPrincipal())
                 .isEqualTo(userDetails);
@@ -76,35 +73,28 @@ class JwtAuthFilterTest {
 
     @Test
     void shouldNotAuthenticateWithoutAuthorizationHeader() throws ServletException, IOException {
-        // given
         when(request.getHeader("Authorization")).thenReturn(null);
 
-        // when
         jwtAuthFilter.doFilter(request, response, filterChain);
 
-        // then
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
         verify(filterChain).doFilter(request, response);
     }
 
     @Test
     void shouldNotAuthenticateWithInvalidToken() throws ServletException, IOException {
-        // given
         String token = "invalid.token";
         when(request.getHeader("Authorization")).thenReturn("Bearer " + token);
         when(jwtService.getEmailFromToken(token)).thenThrow(new RuntimeException("Invalid token"));
 
-        // when
         jwtAuthFilter.doFilter(request, response, filterChain);
 
-        // then
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
         verify(filterChain).doFilter(request, response);
     }
 
     @Test
     void shouldNotAuthenticateWhenTokenValidButUserDetailsExpired() throws ServletException, IOException {
-        // given
         String token = "valid.jwt.token";
         String email = "test@example.com";
         UserDetailsImpl userDetails = new UserDetailsImpl(
@@ -121,17 +111,15 @@ class JwtAuthFilterTest {
         when(userDetailsService.loadUserByUsername(email)).thenReturn(userDetails);
         when(jwtService.isTokenValid(token, userDetails)).thenReturn(false);
 
-        // when
         jwtAuthFilter.doFilter(request, response, filterChain);
 
-        // then
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
         verify(filterChain).doFilter(request, response);
     }
 
     @Test
     void shouldSkipAlreadyAuthenticatedRequest() throws ServletException, IOException {
-        // given — эмулируем уже аутентифицированного пользователя
+        // эмулируем уже аутентифицированного пользователя
         UserDetailsImpl existingUser = new UserDetailsImpl(
                 User.builder()
                         .id(1L)
@@ -155,13 +143,10 @@ class JwtAuthFilterTest {
 
     @Test
     void shouldNotAuthenticateWhenAuthorizationHeaderHasWrongPrefix() throws ServletException, IOException {
-        // given
         when(request.getHeader("Authorization")).thenReturn("Basic someToken");
 
-        // when
         jwtAuthFilter.doFilter(request, response, filterChain);
 
-        // then
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
         verify(jwtService, never()).getEmailFromToken(anyString());
         verify(filterChain).doFilter(request, response);
@@ -169,13 +154,10 @@ class JwtAuthFilterTest {
 
     @Test
     void shouldNotAuthenticateWhenTokenIsEmpty() throws ServletException, IOException {
-        // given
         when(request.getHeader("Authorization")).thenReturn("Bearer ");
 
-        // when
         jwtAuthFilter.doFilter(request, response, filterChain);
 
-        // then
         assertThat(SecurityContextHolder.getContext().getAuthentication()).isNull();
         verify(filterChain).doFilter(request, response);
     }

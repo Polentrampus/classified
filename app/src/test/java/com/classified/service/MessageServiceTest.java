@@ -64,7 +64,6 @@ class MessageServiceTest {
 
         createRequest = MessageCreateRequest.builder()
                 .chatId(10L)
-                .senderId(1L)
                 .content("Hello!")
                 .build();
 
@@ -78,7 +77,6 @@ class MessageServiceTest {
         messageResponse = MessageResponse.builder()
                 .id(100L)
                 .chatId(10L)
-                .senderId(1L)
                 .content("Hello!")
                 .build();
 
@@ -105,16 +103,11 @@ class MessageServiceTest {
         // then
         assertThat(result).isNotNull();
         assertThat(result.getContent()).isEqualTo("Hello!");
-        assertThat(result.getSenderId()).isEqualTo(1L);
         verify(messageRepository).save(any(Message.class));
     }
 
     @Test
     void shouldThrowAccessDeniedWhenCreatingMessageForAnotherUser() {
-        // given
-        createRequest.setSenderId(999L); // чужой senderId
-
-        // when & then
         assertThatThrownBy(() -> messageService.create(createRequest, senderDetails))
                 .isInstanceOf(AccessDeniedException.class);
 
@@ -123,13 +116,10 @@ class MessageServiceTest {
 
     @Test
     void shouldDeleteOwnMessage() {
-        // given
         when(messageRepository.findById(100L)).thenReturn(Optional.of(message));
 
-        // when
         messageService.delete(100L, senderDetails);
 
-        // then
         verify(messageRepository).delete(message);
     }
 
@@ -149,12 +139,10 @@ class MessageServiceTest {
 
     @Test
     void shouldThrowAccessDeniedWhenDeletingForeignMessage() {
-        // given
         User foreignUser = User.builder().id(2L).build();
         Message foreignMessage = Message.builder().id(100L).sender(foreignUser).build();
         when(messageRepository.findById(100L)).thenReturn(Optional.of(foreignMessage));
 
-        // when & then
         assertThatThrownBy(() -> messageService.delete(100L, senderDetails))
                 .isInstanceOf(AccessDeniedException.class);
 
@@ -163,7 +151,6 @@ class MessageServiceTest {
 
     @Test
     void shouldUpdateOwnMessage() {
-        // given
         MessageUpdateRequest updateRequest = MessageUpdateRequest.builder()
                 .content("Updated content")
                 .build();
@@ -172,20 +159,16 @@ class MessageServiceTest {
         doNothing().when(messageMapper).updateEntityFromRequest(any(), any());
         when(messageMapper.toResponse(any(Message.class))).thenReturn(messageResponse);
 
-        // when
         MessageResponse result = messageService.update(updateRequest, 100L, senderDetails);
 
-        // then
         assertThat(result).isNotNull();
         verify(messageMapper).updateEntityFromRequest(updateRequest, message);
     }
 
     @Test
     void shouldThrowExceptionWhenMessageNotFound() {
-        // given
         when(messageRepository.findById(999L)).thenReturn(Optional.empty());
 
-        // when & then
         assertThatThrownBy(() -> messageService.getMessage(999L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("999");
@@ -193,17 +176,14 @@ class MessageServiceTest {
 
     @Test
     void shouldFindByChatId() {
-        // given
         PagingRequest pageable = new PagingRequest(0, 10);
         PagedResult<Message> pagedMessages = new PagedResult<>(
                 List.of(message), 0, 10, 1L);
         when(messageRepository.findByChatId(10L, pageable)).thenReturn(pagedMessages);
         when(messageMapper.toResponse(any(Message.class))).thenReturn(messageResponse);
 
-        // when
         PagedResult<MessageResponse> result = messageService.findByChatId(10L, pageable);
 
-        // then
         assertThat(result.getContent()).hasSize(1);
         assertThat(result.getTotalElements()).isEqualTo(1L);
         verify(messageRepository).findByChatId(10L, pageable);

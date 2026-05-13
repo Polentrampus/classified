@@ -48,29 +48,21 @@ public class CityRepositoryTest {
 
     @Test
     void shouldFindCityById() {
-        // when
         Optional<City> found = cityRepository.findById(city1.getId());
 
-        // then
         assertThat(found).isPresent();
         assertThat(found.get().getName()).isEqualTo("Moscow");
     }
 
     @Test
     void shouldReturnEmptyWhenCityNotFoundById() {
-        // when
         Optional<City> found = cityRepository.findById(999L);
-
-        // then
         assertThat(found).isEmpty();
     }
 
     @Test
     void shouldFindAllCities() {
-        // when
         List<City> cities = cityRepository.findAll();
-
-        // then
         assertThat(cities).hasSize(2);
         assertThat(cities).extracting(City::getName)
                 .containsExactlyInAnyOrder("Moscow", "Saint Petersburg");
@@ -78,16 +70,12 @@ public class CityRepositoryTest {
 
     @Test
     void shouldSaveCity() {
-        // given
         City newCity = new City();
         newCity.setName("Kazan");
-
-        // when
         City saved = cityRepository.save(newCity);
         entityManager.flush();
         entityManager.clear();
 
-        // then
         Optional<City> found = cityRepository.findById(saved.getId());
         assertThat(found).isPresent();
         assertThat(found.get().getName()).isEqualTo("Kazan");
@@ -95,17 +83,14 @@ public class CityRepositoryTest {
 
     @Test
     void shouldUpdateCity() {
-        // given
         City managedCity = entityManager.find(City.class, city1.getId());
         String newName = "Moscow City";
 
-        // when
         managedCity.setName(newName);
         cityRepository.update(managedCity);
         entityManager.flush();
         entityManager.clear();
 
-        // then
         Optional<City> found = cityRepository.findById(city1.getId());
         assertThat(found).isPresent();
         assertThat(found.get().getName()).isEqualTo(newName);
@@ -113,32 +98,27 @@ public class CityRepositoryTest {
 
     @Test
     void shouldDeleteCity() {
-        // when
         City managedCity = entityManager.find(City.class, city2.getId());
         cityRepository.delete(managedCity);
         entityManager.flush();
         entityManager.clear();
 
-        // then
         Optional<City> found = cityRepository.findById(city2.getId());
         assertThat(found).isEmpty();
     }
 
     @Test
     void shouldDeleteCityById() {
-        // when
         cityRepository.deleteById(city1.getId());
         entityManager.flush();
         entityManager.clear();
 
-        // then
         Optional<City> found = cityRepository.findById(city1.getId());
         assertThat(found).isEmpty();
     }
 
     @Test
     void shouldCheckCityExistsById() {
-        // when & then
         assertThat(cityRepository.existsById(city1.getId())).isTrue();
         assertThat(cityRepository.existsById(999L)).isFalse();
     }

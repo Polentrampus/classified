@@ -92,22 +92,19 @@ class PromotionServiceTest {
                 .type(PromotionType.TOP_7_DAYS)
                 .startDate(LocalDateTime.now())
                 .endDate(LocalDateTime.now().plusDays(7))
-                .isActive(true)
+                .active(true)
                 .build();
     }
 
     @Test
     void shouldCreatePromotion() {
-        // given
         when(adRepository.findById(10L)).thenReturn(Optional.of(ad));
         when(promotionRepository.findActiveByAdId(10L)).thenReturn(Optional.empty());
         when(promotionRepository.save(any(Promotion.class))).thenReturn(promotion);
         when(promotionMapper.toResponse(any(Promotion.class))).thenReturn(promotionResponse);
 
-        // when
         PromotionResponse result = promotionService.createPromotion(createRequest, sellerDetails);
 
-        // then
         assertThat(result).isNotNull();
         assertThat(result.getType()).isEqualTo(PromotionType.TOP_7_DAYS);
         verify(promotionRepository).save(any(Promotion.class));
@@ -115,7 +112,6 @@ class PromotionServiceTest {
 
     @Test
     void shouldDeactivatePromotionAsAdmin() {
-        // В UserDetailsImpl добавляем ROLE_ADMIN
         UserDetailsImpl adminDetails = new UserDetailsImpl(
                 User.builder().id(999L).email("admin@test.com")
                         .password("encoded")
@@ -132,21 +128,17 @@ class PromotionServiceTest {
 
     @Test
     void shouldThrowAccessDeniedWhenNotOwnerCreatesPromotion() {
-        // given
         when(adRepository.findById(10L)).thenReturn(Optional.of(ad));
 
-        // when & then
         assertThatThrownBy(() -> promotionService.createPromotion(createRequest, otherUserDetails))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
     @Test
     void shouldThrowExceptionWhenActivePromotionExists() {
-        // given
         when(adRepository.findById(10L)).thenReturn(Optional.of(ad));
         when(promotionRepository.findActiveByAdId(10L)).thenReturn(Optional.of(promotion));
 
-        // when & then
         assertThatThrownBy(() -> promotionService.createPromotion(createRequest, sellerDetails))
                 .isInstanceOf(BusinessException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.DUPLICATE_RESOURCE);
@@ -154,47 +146,37 @@ class PromotionServiceTest {
 
     @Test
     void shouldGetActivePromotionByAdId() {
-        // given
         when(adRepository.findById(10L)).thenReturn(Optional.of(ad));
         when(promotionRepository.findActiveByAdId(10L)).thenReturn(Optional.of(promotion));
         when(promotionMapper.toResponse(promotion)).thenReturn(promotionResponse);
 
-        // when
         PromotionResponse result = promotionService.getActiveByAdId(10L);
 
-        // then
         assertThat(result).isNotNull();
         assertThat(result.isActive()).isTrue();
     }
 
     @Test
     void shouldThrowExceptionWhenAdNotFoundForPromotion() {
-        // given
         when(adRepository.findById(999L)).thenReturn(Optional.empty());
 
-        // when & then
         assertThatThrownBy(() -> promotionService.getActiveByAdId(999L))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
     void shouldDeactivatePromotionAsOwner() {
-        // given
         when(promotionRepository.findActiveByAdId(10L)).thenReturn(Optional.of(promotion));
 
-        // when
         promotionService.deactivatePromotion(10L, sellerDetails);
 
-        // then
         assertThat(promotion.isActive()).isFalse();
     }
 
     @Test
     void shouldThrowAccessDeniedWhenNotOwnerDeactivatesPromotion() {
-        // given
         when(promotionRepository.findActiveByAdId(10L)).thenReturn(Optional.of(promotion));
 
-        // when & then
         assertThatThrownBy(() -> promotionService.deactivatePromotion(10L, otherUserDetails))
                 .isInstanceOf(AccessDeniedException.class);
     }

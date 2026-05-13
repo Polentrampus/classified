@@ -92,7 +92,6 @@ class UserServiceTest {
 
     @Test
     void shouldRegisterNewUser() {
-        // given
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.existsByPhone(anyString())).thenReturn(false);
         when(userMapper.toEntity(any(UserRegistrationRequest.class))).thenReturn(user);
@@ -101,10 +100,8 @@ class UserServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(userMapper.toResponse(any(User.class))).thenReturn(userResponse);
 
-        // when
         UserResponse result = userService.register(registrationRequest);
 
-        // then
         assertThat(result).isNotNull();
         assertThat(result.getEmail()).isEqualTo("john@example.com");
         assertThat(result.getRole()).isEqualTo("ROLE_USER");
@@ -120,10 +117,8 @@ class UserServiceTest {
 
     @Test
     void shouldThrowExceptionWhenEmailAlreadyExists() {
-        // given
         when(userRepository.existsByEmail("john@example.com")).thenReturn(true);
 
-        // when & then
         assertThatThrownBy(() -> userService.register(registrationRequest))
                 .isInstanceOf(BusinessException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.DUPLICATE_RESOURCE)
@@ -134,11 +129,9 @@ class UserServiceTest {
 
     @Test
     void shouldThrowExceptionWhenPhoneAlreadyExists() {
-        // given
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userRepository.existsByPhone(anyString())).thenReturn(true);
 
-        // when & then
         assertThatThrownBy(() -> userService.register(registrationRequest))
                 .isInstanceOf(BusinessException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.DUPLICATE_RESOURCE);
@@ -148,14 +141,11 @@ class UserServiceTest {
 
     @Test
     void shouldGetProfile() {
-        // given
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(userMapper.toResponse(user)).thenReturn(userResponse);
 
-        // when
         UserResponse result = userService.getProfile(1L);
 
-        // then
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(1L);
         assertThat(result.getEmail()).isEqualTo("john@example.com");
@@ -163,10 +153,8 @@ class UserServiceTest {
 
     @Test
     void shouldThrowExceptionWhenUserNotFound() {
-        // given
         when(userRepository.findById(999L)).thenReturn(Optional.empty());
 
-        // when & then
         assertThatThrownBy(() -> userService.getProfile(999L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("999");
@@ -174,7 +162,6 @@ class UserServiceTest {
 
     @Test
     void shouldUpdateProfile() {
-        // given
         UserUpdateRequest updateRequest = UserUpdateRequest.builder()
                 .name("Jane")
                 .lastName("Doe")
@@ -204,10 +191,8 @@ class UserServiceTest {
         doNothing().when(userMapper).updateEntityFromRequest(any(), any());
         when(userMapper.toResponse(any(User.class))).thenReturn(updatedResponse);
 
-        // when
         UserResponse result = userService.updateProfile(1L, updateRequest);
 
-        // then
         assertThat(result).isNotNull();
         assertThat(result.getName()).isEqualTo("Jane");
         verify(userMapper).updateEntityFromRequest(updateRequest, user);
@@ -215,15 +200,12 @@ class UserServiceTest {
 
     @Test
     void shouldChangePasswordWhenOldPasswordMatches() {
-        // given
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("oldPassword", "encodedPassword")).thenReturn(true);
         when(passwordEncoder.encode("newPassword")).thenReturn("newEncodedPassword");
 
-        // when
         userService.changePassword(1L, "oldPassword", "newPassword");
 
-        // then
         verify(userRepository).findById(1L);
         verify(passwordEncoder).matches("oldPassword", "encodedPassword");
         assertThat(user.getPassword()).isEqualTo("newEncodedPassword");
@@ -231,11 +213,9 @@ class UserServiceTest {
 
     @Test
     void shouldThrowExceptionWhenOldPasswordDoesNotMatch() {
-        // given
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("wrongPassword", "encodedPassword")).thenReturn(false);
 
-        // when & then
         assertThatThrownBy(() -> userService.changePassword(1L, "wrongPassword", "newPassword"))
                 .isInstanceOf(BusinessException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.VALIDATION_ERROR)
@@ -254,7 +234,6 @@ class UserServiceTest {
 
     @Test
     void shouldCreateAdmin() {
-        // given
         Role adminRole = Role.builder().id(2L).name("ROLE_ADMIN").build();
         when(userMapper.toEntity(any(UserRegistrationRequest.class))).thenReturn(user);
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
@@ -262,25 +241,20 @@ class UserServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(userMapper.toResponse(any(User.class))).thenReturn(userResponse);
 
-        // when
         UserResponse result = userService.createAdmin(registrationRequest);
 
-        // then
         assertThat(result).isNotNull();
         verify(roleRepository).findByName("ROLE_ADMIN");
     }
 
     @Test
     void shouldGetUserStatistics() {
-        // given
         UserStatisticsDto stats = new UserStatisticsDto(
                 1L, "John", new BigDecimal("4.50"), 10L, 5L, new BigDecimal("5000.00"));
         when(userRepository.getUserStatistics(1L)).thenReturn(stats);
 
-        // when
         UserStatisticsDto result = userService.getUserStatistics(1L);
 
-        // then
         assertThat(result).isNotNull();
         assertThat(result.getRating()).isEqualByComparingTo("4.50");
         assertThat(result.getTotalAds()).isEqualTo(10L);
@@ -289,13 +263,10 @@ class UserServiceTest {
 
     @Test
     void shouldGetUserRating() {
-        // given
         when(userRepository.getRatingUser(1L)).thenReturn(4.5);
 
-        // when
         Double rating = userService.getUserRating(1L);
 
-        // then
         assertThat(rating).isEqualTo(4.5);
         verify(userRepository).getRatingUser(1L);
     }

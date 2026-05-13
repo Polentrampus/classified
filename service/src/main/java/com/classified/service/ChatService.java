@@ -35,12 +35,6 @@ public class ChatService {
     public ChatResponse create(ChatCreateRequest request, UserDetailsImpl userDetails) {
         log.info("Создание чата: adId={}, userId={}", request.getAdId(), request.getUserId());
 
-        if(!request.getUserId().equals(userDetails.getId())) {
-            log.warn("Отказ в доступе: userId из запроса {} не совпадает с текущим пользователем {}",
-                    request.getUserId(), userDetails.getId());
-            throw new AccessDeniedException("You can only edit your own ads");
-        }
-
         Optional<Chat> existing = chatRepository.findByAdIdAndBuyerId(request.getAdId(), request.getUserId());
         if (existing.isPresent()) {
             log.info("Чат уже существует: id={}", existing.get().getId());
@@ -48,8 +42,33 @@ public class ChatService {
         }
 
         Chat chat = chatMapper.toEntity(request);
+        chatRepository.save(chat);
+        Long adId = request.getAdId();
+        Long userId = request.getUserId();
+        log.debug("Обновление связей чата: adId={}, userId={}", adId, userId);
+        if (adId != null) {
+            Ad ad = adRepository
+                    .findById(adId)
+                    .orElseThrow(() -> {
+                        log.warn("Объявление с id={} не найдено", adId);
+                        return new ResourceNotFoundException("Ad", "id", adId);
+                    });
+            chat.setAd(ad);
+            chat.addParticipant(ad.getSeller());
+            log.debug("Добавлен продавец id={} как участник чата", ad.getSeller().getId());
+        }
+        if (userId != null) {
+            User user = userRepository
+                    .findById(userId)
+                    .orElseThrow(() -> {
+                        log.warn("Пользователь с id={} не найден", userId);
+                        return new ResourceNotFoundException("User", "id", userId);
+                    });
+            chat.addParticipant(user);
+            log.debug("Добавлен пользователь id={} как участник чата", userId);
+        }
         updateRelatedEntities(request.getAdId(), request.getUserId(), chat);
-        ChatResponse response = chatMapper.toResponse(chatRepository.save(chat));
+        ChatResponse response = chatMapper.toResponse(chat);
         log.info("Чат создан: id={}, adId={}", response.getId(), response.getAdId());
         return response;
     }
@@ -131,6 +150,7 @@ public class ChatService {
         log.debug("Чат найден: id={}", response.getId());
         return response;
     }
+
 
     private void updateRelatedEntities(Long adId, Long userId, Chat chat) {
         log.debug("Обновление связей чата: adId={}, userId={}", adId, userId);

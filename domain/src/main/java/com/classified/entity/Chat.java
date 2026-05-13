@@ -16,6 +16,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -29,6 +30,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Slf4j
 public class Chat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,10 +51,15 @@ public class Chat {
 
     public void addParticipant(User user) {
         ChatParticipant participant = new ChatParticipant();
+        boolean alreadyExists = participants.stream()
+                .anyMatch(p -> p.getUser().getId().equals(user.getId()));
 
+        if (alreadyExists) {
+            log.debug("Пользователь id={} уже является участником чата", user.getId());
+            return;
+        }
         // Создаём составной ключ
         ChatParticipantId id = new ChatParticipantId();
-        id.setChatId(this.id);
         id.setUserId(user.getId());
         participant.setId(id);
 

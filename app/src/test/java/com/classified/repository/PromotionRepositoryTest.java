@@ -39,12 +39,10 @@ public class PromotionRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // Создаем роль
         Role userRole = new Role();
         userRole.setName("ROLE_USER");
         entityManager.persist(userRole);
 
-        // Создаем продавца
         seller = User.builder()
                 .name("Seller")
                 .lastName("Test")
@@ -55,7 +53,6 @@ public class PromotionRepositoryTest {
                 .build();
         entityManager.persist(seller);
 
-        // Создаем город и адрес
         City city = new City();
         city.setName("Moscow");
         entityManager.persist(city);
@@ -66,7 +63,6 @@ public class PromotionRepositoryTest {
                 .build();
         entityManager.persist(address);
 
-        // Создаем объявления
         ad1 = Ad.builder()
                 .title("Ad 1")
                 .description("Description 1")
@@ -87,7 +83,6 @@ public class PromotionRepositoryTest {
                 .build();
         entityManager.persist(ad2);
 
-        // Создаем активное промо
         activePromotion = new Promotion();
         activePromotion.setAd(ad1);
         activePromotion.setType(PromotionType.TOP_7_DAYS);
@@ -96,7 +91,6 @@ public class PromotionRepositoryTest {
         activePromotion.setActive(true);
         entityManager.persist(activePromotion);
 
-        // Создаем истекшее промо
         expiredPromotion = new Promotion();
         expiredPromotion.setAd(ad2);
         expiredPromotion.setType(PromotionType.TOP_30_DAYS);
@@ -111,10 +105,8 @@ public class PromotionRepositoryTest {
 
     @Test
     void shouldFindActivePromotionByAdId() {
-        // when
         Optional<Promotion> found = promotionRepository.findActiveByAdId(ad1.getId());
 
-        // then
         assertThat(found).isPresent();
         assertThat(found.get().getType()).isEqualTo(PromotionType.TOP_7_DAYS);
         assertThat(found.get().isActive()).isTrue();
@@ -122,22 +114,17 @@ public class PromotionRepositoryTest {
 
     @Test
     void shouldReturnEmptyWhenNoActivePromotion() {
-        // Деактивируем истекшие промо
         promotionRepository.deactivateExpiredPromotions();
         entityManager.flush();
         entityManager.clear();
 
-        // Теперь ищем активное промо для ad2 - должно быть empty
         Optional<Promotion> found = promotionRepository.findActiveByAdId(ad2.getId());
 
-        // then
         assertThat(found).isEmpty();
 
-        // Проверяем, что для несуществующего ad тоже возвращается empty
         Optional<Promotion> notFound = promotionRepository.findActiveByAdId(999L);
         assertThat(notFound).isEmpty();
 
-        // Проверяем, что активное промо для ad1 все еще находится
         Optional<Promotion> activeFound = promotionRepository.findActiveByAdId(ad1.getId());
         assertThat(activeFound).isPresent();
         assertThat(activeFound.get().isActive()).isTrue();
@@ -145,17 +132,14 @@ public class PromotionRepositoryTest {
 
     @Test
     void shouldDeactivateExpiredPromotions() {
-        // when
         promotionRepository.deactivateExpiredPromotions();
         entityManager.flush();
         entityManager.clear();
 
-        // then - expired promotion should now be inactive
         Optional<Promotion> expired = promotionRepository.findById(expiredPromotion.getId());
         assertThat(expired).isPresent();
         assertThat(expired.get().isActive()).isFalse();
 
-        // active promotion should remain active
         Optional<Promotion> active = promotionRepository.findById(activePromotion.getId());
         assertThat(active).isPresent();
         assertThat(active.get().isActive()).isTrue();
@@ -163,7 +147,6 @@ public class PromotionRepositoryTest {
 
     @Test
     void shouldSavePromotion() {
-        // given
         Promotion newPromotion = new Promotion();
         newPromotion.setAd(ad2);
         newPromotion.setType(PromotionType.HIGHLIGHT);
@@ -171,12 +154,10 @@ public class PromotionRepositoryTest {
         newPromotion.setEndDate(LocalDateTime.now().plusDays(7));
         newPromotion.setActive(true);
 
-        // when
         Promotion saved = promotionRepository.save(newPromotion);
         entityManager.flush();
         entityManager.clear();
 
-        // then
         Optional<Promotion> found = promotionRepository.findById(saved.getId());
         assertThat(found).isPresent();
         assertThat(found.get().getType()).isEqualTo(PromotionType.HIGHLIGHT);
@@ -185,35 +166,27 @@ public class PromotionRepositoryTest {
 
     @Test
     void shouldFindPromotionById() {
-        // when
         Optional<Promotion> found = promotionRepository.findById(activePromotion.getId());
 
-        // then
         assertThat(found).isPresent();
         assertThat(found.get().getType()).isEqualTo(PromotionType.TOP_7_DAYS);
     }
 
     @Test
     void shouldFindAllPromotions() {
-        // when
         var promotions = promotionRepository.findAll();
-
-        // then
         assertThat(promotions).hasSize(2);
     }
 
     @Test
     void shouldUpdatePromotion() {
-        // given
         Promotion managedPromotion = entityManager.find(Promotion.class, activePromotion.getId());
 
-        // when
         managedPromotion.setActive(false);
         promotionRepository.update(managedPromotion);
         entityManager.flush();
         entityManager.clear();
 
-        // then
         Optional<Promotion> found = promotionRepository.findById(activePromotion.getId());
         assertThat(found).isPresent();
         assertThat(found.get().isActive()).isFalse();
@@ -221,20 +194,17 @@ public class PromotionRepositoryTest {
 
     @Test
     void shouldDeletePromotion() {
-        // when
         Promotion managedPromotion = entityManager.find(Promotion.class, expiredPromotion.getId());
         promotionRepository.delete(managedPromotion);
         entityManager.flush();
         entityManager.clear();
 
-        // then
         Optional<Promotion> found = promotionRepository.findById(expiredPromotion.getId());
         assertThat(found).isEmpty();
     }
 
     @Test
     void shouldCheckPromotionExistsById() {
-        // when & then
         assertThat(promotionRepository.existsById(activePromotion.getId())).isTrue();
         assertThat(promotionRepository.existsById(999L)).isFalse();
     }

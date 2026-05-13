@@ -46,7 +46,6 @@ class MessageControllerTest extends BaseControllerTest {
         UserDetailsImpl testUser = createTestUser();
         MessageCreateRequest request = MessageCreateRequest.builder()
                 .chatId(10L)
-                .senderId(1L)
                 .content("Hello!")
                 .build();
 

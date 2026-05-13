@@ -19,6 +19,6 @@ public class PromotionResponse {
     private PromotionType type;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
-    private boolean isActive;
+    private boolean active;
     private LocalDateTime createdAt;
 }

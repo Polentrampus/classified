@@ -14,7 +14,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Service
-@Transactional
 ///  Генерация и проверка всех токенов
 public class JwtService {
     @Value("${jwt.secret}")

@@ -15,8 +15,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -61,7 +63,7 @@ public class MessageController {
     }
 
     @Operation(summary = "Изменить сообщение", description = "Переписать сообщение, которое принадлежит пользователю")
-    @GetMapping("update/{messageId}")
+    @PatchMapping("update/{messageId}")
     @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     ResponseEntity<MessageResponse> update(@RequestBody MessageUpdateRequest request,
                                            @PathVariable Long messageId,

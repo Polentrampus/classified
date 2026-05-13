@@ -28,7 +28,6 @@ class UserDetailsServiceImplTest {
 
     @Test
     void shouldLoadUserByUsername() {
-        // given
         User user = User.builder()
                 .id(1L)
                 .email("test@example.com")
@@ -38,10 +37,8 @@ class UserDetailsServiceImplTest {
 
         when(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(user));
 
-        // when
         UserDetails result = userDetailsService.loadUserByUsername("test@example.com");
 
-        // then
         assertThat(result).isNotNull();
         assertThat(result.getUsername()).isEqualTo("test@example.com");
         assertThat(result.getPassword()).isEqualTo("encodedPassword");
@@ -52,10 +49,8 @@ class UserDetailsServiceImplTest {
 
     @Test
     void shouldThrowExceptionWhenUserNotFound() {
-        // given
         when(userRepository.findByEmail("nonexistent@example.com")).thenReturn(Optional.empty());
 
-        // when & then
         assertThatThrownBy(() -> userDetailsService.loadUserByUsername("nonexistent@example.com"))
                 .isInstanceOf(UsernameNotFoundException.class)
                 .hasMessage("User not found");

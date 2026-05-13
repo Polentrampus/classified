@@ -49,36 +49,29 @@ public class RoleRepositoryTest {
 
     @Test
     void shouldFindRoleByName() {
-        // when
         Optional<Role> found = roleRepository.findByName("ROLE_USER");
 
-        // then
         assertThat(found).isPresent();
         assertThat(found.get().getName()).isEqualTo("ROLE_USER");
     }
 
     @Test
     void shouldReturnEmptyWhenRoleNotFoundByName() {
-        // when
         Optional<Role> found = roleRepository.findByName("NONEXISTENT_ROLE");
 
-        // then
         assertThat(found).isEmpty();
     }
 
     @Test
     void shouldSaveRole() {
-        // given
         Role newRole = Role.builder()
                 .name("ROLE_MODERATOR")
                 .build();
 
-        // when
         Role saved = roleRepository.save(newRole);
         entityManager.flush();
         entityManager.clear();
 
-        // then
         Optional<Role> found = roleRepository.findById(saved.getId());
         assertThat(found).isPresent();
         assertThat(found.get().getName()).isEqualTo("ROLE_MODERATOR");
@@ -86,16 +79,13 @@ public class RoleRepositoryTest {
 
     @Test
     void shouldUpdateRole() {
-        // given
         String newName = "ROLE_UPDATED";
 
-        // when
         userRole.setName(newName);
         roleRepository.update(userRole);
         entityManager.flush();
         entityManager.clear();
 
-        // then
         Optional<Role> found = roleRepository.findById(userRole.getId());
         assertThat(found).isPresent();
         assertThat(found.get().getName()).isEqualTo(newName);
@@ -103,22 +93,18 @@ public class RoleRepositoryTest {
 
     @Test
     void shouldDeleteRole() {
-        // when
         roleRepository.delete(adminRole);
         entityManager.flush();
         entityManager.clear();
 
-        // then
         Optional<Role> found = roleRepository.findById(adminRole.getId());
         assertThat(found).isEmpty();
     }
 
     @Test
     void shouldFindAllRoles() {
-        // when
         var roles = roleRepository.findAll();
 
-        // then
         assertThat(roles).hasSize(2);
         assertThat(roles).extracting(Role::getName)
                 .containsExactlyInAnyOrder("ROLE_USER", "ROLE_ADMIN");
@@ -126,7 +112,6 @@ public class RoleRepositoryTest {
 
     @Test
     void shouldCheckRoleExistsById() {
-        // when & then
         assertThat(roleRepository.existsById(userRole.getId())).isTrue();
         assertThat(roleRepository.existsById(999L)).isFalse();
     }

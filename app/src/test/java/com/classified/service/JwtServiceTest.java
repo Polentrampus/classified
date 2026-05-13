@@ -27,7 +27,7 @@ class JwtServiceTest {
         // Устанавливаем значения через рефлексию (без поднятия контекста)
         ReflectionTestUtils.setField(jwtService, "secret",
                 "mySecretKeyForTestingThatIsLongEnoughForHS256Algorithm1234567890");
-        ReflectionTestUtils.setField(jwtService, "expirationMs", 3600000L); // 1 час
+        ReflectionTestUtils.setField(jwtService, "expirationMs", 3600000L);
 
         userDetails = new UserDetailsImpl(
                 User.builder()
@@ -41,30 +41,24 @@ class JwtServiceTest {
 
     @Test
     void shouldGenerateToken() {
-        // when
         String token = jwtService.generateToken(userDetails);
 
-        // then
         assertThat(token).isNotNull();
         assertThat(token).isNotBlank();
-        assertThat(token.split("\\.")).hasSize(3); // стандартный JWT: header.payload.signature
+        assertThat(token.split("\\.")).hasSize(3);
     }
 
     @Test
     void shouldValidateToken() {
-        // given
         String token = jwtService.generateToken(userDetails);
 
-        // when
         boolean isValid = jwtService.isTokenValid(token, userDetails);
 
-        // then
         assertThat(isValid).isTrue();
     }
 
     @Test
     void shouldDisableDeletedUser() {
-        // given
         User deletedUser = User.builder()
                 .id(1L)
                 .email("deleted@test.com")
@@ -75,16 +69,13 @@ class JwtServiceTest {
 
         UserDetailsImpl deletedUserDetails = new UserDetailsImpl(deletedUser);
 
-        // when
         boolean enabled = deletedUserDetails.isEnabled();
 
-        // then
         assertThat(enabled).isFalse();
     }
 
     @Test
     void shouldInvalidateExpiredToken() {
-        // given - создаем сервис с истекшим сроком (1 мс)
         ReflectionTestUtils.setField(jwtService, "expirationMs", 1L);
         String token = jwtService.generateToken(userDetails);
 
@@ -94,17 +85,13 @@ class JwtServiceTest {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-
-        // when
         boolean isValid = jwtService.isTokenValid(token, userDetails);
 
-        // then
         assertThat(isValid).isFalse();
     }
 
     @Test
     void shouldInvalidateTokenForDifferentUser() {
-        // given
         String token = jwtService.generateToken(userDetails);
 
         UserDetailsImpl otherUser = new UserDetailsImpl(
@@ -116,41 +103,32 @@ class JwtServiceTest {
                         .build()
         );
 
-        // when
         boolean isValid = jwtService.isTokenValid(token, otherUser);
 
-        // then
         assertThat(isValid).isFalse();
     }
 
     @Test
     void shouldInvalidateTamperedToken() {
-        // given
         String token = jwtService.generateToken(userDetails);
         String tamperedToken = token + "tampered";
 
-        // when
         boolean isValid = jwtService.isTokenValid(tamperedToken, userDetails);
 
-        // then
         assertThat(isValid).isFalse();
     }
 
     @Test
     void shouldExtractEmailFromToken() {
-        // given
         String token = jwtService.generateToken(userDetails);
 
-        // when
         String email = jwtService.getEmailFromToken(token);
 
-        // then
         assertThat(email).isEqualTo("test@example.com");
     }
 
     @Test
     void shouldThrowExceptionForInvalidTokenWhenExtractingEmail() {
-        // when & then - JwtException будет перехвачен в фильтре
         try {
             jwtService.getEmailFromToken("invalid.token.here");
         } catch (Exception e) {

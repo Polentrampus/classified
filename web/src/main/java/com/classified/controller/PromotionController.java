@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
@@ -47,7 +49,11 @@ public class PromotionController {
     @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")
     @GetMapping("/byAd/{adId}")
     public ResponseEntity<PromotionResponse> getActiveByAdId(@PathVariable Long adId) {
-        return ResponseEntity.ok(promotionService.getActiveByAdId(adId));
+        PromotionResponse response = promotionService.getActiveByAdId(adId);
+        if (response == null) {
+            return ResponseEntity.noContent().build();  // 204 No Content
+        }
+        return ResponseEntity.ok(response);
     }
 
     @PreAuthorize("hasRole('ADMIN') OR hasRole('USER')")

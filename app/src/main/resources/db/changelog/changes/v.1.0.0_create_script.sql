@@ -139,7 +139,7 @@ CREATE TABLE IF NOT EXISTS promotion (
     type VARCHAR(20) NOT NULL CHECK (type IN ('TOP_7_DAYS', 'TOP_30_DAYS', 'HIGHLIGHT')),
     start_date TIMESTAMP NOT NULL,
     end_date TIMESTAMP NOT NULL CHECK (end_date > start_date),
-    is_active BOOLEAN DEFAULT TRUE,
+    active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
@@ -168,11 +168,11 @@ SELECT
     a.created_at,
     u.rating as seller_rating,
     CASE
-        WHEN p.id IS NOT NULL AND p.is_active = TRUE AND p.end_date > NOW() THEN p.type
+        WHEN p.id IS NOT NULL AND p.active = TRUE AND p.end_date > NOW() THEN p.type
         ELSE NULL
         END as promotion_type,
     CASE
-        WHEN p.id IS NOT NULL AND p.is_active = TRUE AND p.end_date > NOW() THEN 100 + u.rating * 10
+        WHEN p.id IS NOT NULL AND p.active = TRUE AND p.end_date > NOW() THEN 100 + u.rating * 10
         ELSE u.rating * 10
         END as search_score,
     (

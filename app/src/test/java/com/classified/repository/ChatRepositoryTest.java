@@ -37,12 +37,10 @@ public class ChatRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // Создаем роли
         Role userRole = new Role();
         userRole.setName("ROLE_USER");
         entityManager.persist(userRole);
 
-        // Создаем продавца
         seller = User.builder()
                 .name("Seller")
                 .lastName("Test")
@@ -53,7 +51,6 @@ public class ChatRepositoryTest {
                 .build();
         entityManager.persist(seller);
 
-        // Создаем покупателя
         buyer = User.builder()
                 .name("Buyer")
                 .lastName("Test")
@@ -64,7 +61,6 @@ public class ChatRepositoryTest {
                 .build();
         entityManager.persist(buyer);
 
-        // Создаем город и адрес
         City city = new City();
         city.setName("Moscow");
         entityManager.persist(city);
@@ -75,7 +71,6 @@ public class ChatRepositoryTest {
                 .build();
         entityManager.persist(address);
 
-        // Создаем объявление
         ad = Ad.builder()
                 .title("Test Ad")
                 .description("Test Description")
@@ -86,7 +81,6 @@ public class ChatRepositoryTest {
                 .build();
         entityManager.persist(ad);
 
-        // Создаем чат
         chat = Chat.builder()
                 .ad(ad)
                 .build();
@@ -100,30 +94,24 @@ public class ChatRepositoryTest {
 
     @Test
     void shouldFindChatByAdId() {
-        // when
         Optional<Chat> found = chatRepository.findByAdId(ad.getId());
 
-        // then
         assertThat(found).isPresent();
         assertThat(found.get().getAd().getId()).isEqualTo(ad.getId());
     }
 
     @Test
     void shouldReturnEmptyWhenChatNotFoundByAdId() {
-        // when
         Optional<Chat> found = chatRepository.findByAdId(999L);
 
-        // then
         assertThat(found).isEmpty();
     }
 
     @Test
     void shouldFindChatsByUserId() {
-        // when
         List<Chat> buyerChats = chatRepository.findByUserId(buyer.getId());
         List<Chat> sellerChats = chatRepository.findByUserId(seller.getId());
 
-        // then
         assertThat(buyerChats).hasSize(1);
         assertThat(sellerChats).hasSize(1);
         assertThat(buyerChats.get(0).getId()).isEqualTo(chat.getId());
@@ -131,35 +119,28 @@ public class ChatRepositoryTest {
 
     @Test
     void shouldReturnEmptyListWhenNoChatsForUser() {
-        // when
         List<Chat> chats = chatRepository.findByUserId(999L);
 
-        // then
         assertThat(chats).isEmpty();
     }
 
     @Test
     void shouldFindChatByAdIdAndBuyerId() {
-        // when
         Optional<Chat> found = chatRepository.findByAdIdAndBuyerId(ad.getId(), buyer.getId());
 
-        // then
         assertThat(found).isPresent();
         assertThat(found.get().getAd().getId()).isEqualTo(ad.getId());
     }
 
     @Test
     void shouldReturnEmptyWhenChatNotFoundByAdIdAndBuyerId() {
-        // when
         Optional<Chat> found = chatRepository.findByAdIdAndBuyerId(ad.getId(), 999L);
 
-        // then
         assertThat(found).isEmpty();
     }
 
     @Test
     void shouldSaveChat() {
-        // given – получаем управляемые сущности
         User managedSeller = entityManager.find(User.class, seller.getId());
         User managedBuyer = entityManager.find(User.class, buyer.getId());
         Ad managedAd = entityManager.find(Ad.class, ad.getId());
@@ -171,14 +152,12 @@ public class ChatRepositoryTest {
         Chat savedChat = chatRepository.save(newChat);
         entityManager.flush(); // чтобы получить id чата
 
-        // Теперь добавляем участников к уже сохранённому чату и мержим
         savedChat.addParticipant(managedSeller);
         savedChat.addParticipant(managedBuyer);
         chatRepository.update(savedChat);
         entityManager.flush();
         entityManager.clear();
 
-        // then
         Optional<Chat> found = chatRepository.findById(savedChat.getId());
         assertThat(found).isPresent();
         assertThat(found.get().getParticipants()).hasSize(2);
@@ -186,12 +165,10 @@ public class ChatRepositoryTest {
 
     @Test
     void shouldDeleteChat() {
-        // when
         chatRepository.delete(chat);
         entityManager.flush();
         entityManager.clear();
 
-        // then
         Optional<Chat> found = chatRepository.findById(chat.getId());
         assertThat(found).isEmpty();
     }

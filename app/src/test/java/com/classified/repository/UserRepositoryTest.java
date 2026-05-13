@@ -41,7 +41,6 @@ public class UserRepositoryTest {
 
     @Test
     public void shouldFindUserByEmail() {
-        // given
         User user = User.builder()
                 .name("Test")
                 .lastName("User")
@@ -54,10 +53,8 @@ public class UserRepositoryTest {
         entityManager.flush();
         entityManager.clear();
 
-        // when
         Optional<User> found = userRepository.findByEmail("test@example.com");
 
-        // then
         assertThat(found).isPresent();
         assertThat(found.get().getName()).isEqualTo("Test");
         assertThat(found.get().getEmail()).isEqualTo("test@example.com");
@@ -65,16 +62,12 @@ public class UserRepositoryTest {
 
     @Test
     void shouldReturnEmptyWhenEmailNotFound() {
-        // when
         Optional<User> found = userRepository.findByEmail("nonexistent@example.com");
-
-        // then
         assertThat(found).isEmpty();
     }
 
     @Test
     void shouldCheckExistsByEmail() {
-        // given
         User user = User.builder()
                 .name("Test")
                 .lastName("User")
@@ -86,14 +79,12 @@ public class UserRepositoryTest {
         entityManager.persist(user);
         entityManager.flush();
 
-        // when & then
         assertThat(userRepository.existsByEmail("exists@example.com")).isTrue();
         assertThat(userRepository.existsByEmail("no@example.com")).isFalse();
     }
 
     @Test
     void shouldCheckExistsByPhone() {
-        // given
         User user = User.builder()
                 .name("Test")
                 .lastName("User")
@@ -105,14 +96,12 @@ public class UserRepositoryTest {
         entityManager.persist(user);
         entityManager.flush();
 
-        // when & then
         assertThat(userRepository.existsByPhone("+79161234569")).isTrue();
         assertThat(userRepository.existsByPhone("+79999999999")).isFalse();
     }
 
     @Test
     void shouldSaveAndFindById() {
-        // given
         User user = User.builder()
                 .name("Save")
                 .lastName("Test")
@@ -122,12 +111,10 @@ public class UserRepositoryTest {
                 .role(userRole)
                 .build();
 
-        // when
         User saved = userRepository.save(user);
         entityManager.flush();
         entityManager.clear();
 
-        // then
         Optional<User> found = userRepository.findById(saved.getId());
         assertThat(found).isPresent();
         assertThat(found.get().getEmail()).isEqualTo("save@example.com");
@@ -135,7 +122,6 @@ public class UserRepositoryTest {
 
     @Test
     void shouldUpdateUser() {
-        // given
         User user = User.builder()
                 .name("Old")
                 .lastName("Name")
@@ -147,13 +133,11 @@ public class UserRepositoryTest {
         entityManager.persist(user);
         entityManager.flush();
 
-        // when
         user.setName("New");
         userRepository.update(user);
         entityManager.flush();
         entityManager.clear();
 
-        // then
         Optional<User> found = userRepository.findById(user.getId());
         assertThat(found).isPresent();
         assertThat(found.get().getName()).isEqualTo("New");
@@ -161,7 +145,6 @@ public class UserRepositoryTest {
 
     @Test
     void shouldDeleteUser() {
-        // given
         User user = User.builder()
                 .name("Delete")
                 .lastName("Test")
@@ -174,12 +157,10 @@ public class UserRepositoryTest {
         entityManager.flush();
         Long id = user.getId();
 
-        // when
         userRepository.delete(user);
         entityManager.flush();
         entityManager.clear();
 
-        // then — запись есть (soft delete), но помечена как deleted
         Optional<User> found = userRepository.findById(id);
         assertThat(found).isPresent();
         assertThat(found.get().isDeleted()).isTrue();

@@ -57,7 +57,7 @@ class PromotionControllerTest extends BaseControllerTest {
                 .type(PromotionType.TOP_7_DAYS)
                 .startDate(LocalDateTime.now())
                 .endDate(LocalDateTime.now().plusDays(7))
-                .isActive(true)
+                .active(true)
                 .build();
 
         when(promotionService.createPromotion(any(PromotionCreateRequest.class), any(UserDetailsImpl.class)))
@@ -79,7 +79,7 @@ class PromotionControllerTest extends BaseControllerTest {
                 .id(1L)
                 .adId(10L)
                 .type(PromotionType.TOP_30_DAYS)
-                .isActive(true)
+                .active(true)
                 .build();
 
         when(promotionService.getActiveByAdId(10L)).thenReturn(response);

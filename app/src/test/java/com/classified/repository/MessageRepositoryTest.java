@@ -42,12 +42,10 @@ public class MessageRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        // Создаем роли
         Role userRole = new Role();
         userRole.setName("ROLE_USER");
         entityManager.persist(userRole);
 
-        // Создаем пользователей
         sender = User.builder()
                 .name("Sender")
                 .lastName("Test")
@@ -68,7 +66,6 @@ public class MessageRepositoryTest {
                 .build();
         entityManager.persist(receiver);
 
-        // Создаем город и адрес
         City city = new City();
         city.setName("Moscow");
         entityManager.persist(city);
@@ -79,7 +76,6 @@ public class MessageRepositoryTest {
                 .build();
         entityManager.persist(address);
 
-        // Создаем объявление
         Ad ad = Ad.builder()
                 .title("Test Ad")
                 .description("Test Description")
@@ -90,7 +86,6 @@ public class MessageRepositoryTest {
                 .build();
         entityManager.persist(ad);
 
-        // Создаем чат
         chat = Chat.builder()
                 .ad(ad)
                 .build();
@@ -98,7 +93,6 @@ public class MessageRepositoryTest {
         chat.addParticipant(receiver);
         entityManager.persist(chat);
 
-        // Создаем сообщения с разным временем
         message1 = Message.builder()
                 .chat(chat)
                 .sender(sender)
@@ -121,13 +115,10 @@ public class MessageRepositoryTest {
 
     @Test
     void shouldFindMessagesByChatIdWithPagination() {
-        // given
         PagingRequest pageable = new PagingRequest(0, 10, Sort.by("createdAt", Direction.DESC));
 
-        // when
         PagedResult<Message> result = messageRepository.findByChatId(chat.getId(), pageable);
 
-        // then
         assertThat(result.getContent()).hasSize(2);
         assertThat(result.getTotalElements()).isEqualTo(2);
         assertThat(result.getTotalPages()).isEqualTo(1);
@@ -137,13 +128,10 @@ public class MessageRepositoryTest {
 
     @Test
     void shouldFindMessagesByChatIdWithPaginationAndOffset() {
-        // given
         PagingRequest pageable = new PagingRequest(0, 1);
 
-        // when
         PagedResult<Message> result = messageRepository.findByChatId(chat.getId(), pageable);
 
-        // then
         assertThat(result.getContent()).hasSize(1);
         assertThat(result.getTotalElements()).isEqualTo(2);
         assertThat(result.getTotalPages()).isEqualTo(2);
@@ -151,26 +139,20 @@ public class MessageRepositoryTest {
 
     @Test
     void shouldReturnEmptyPageForNonExistentChat() {
-        // given
         PagingRequest pageable = new PagingRequest(0, 10);
 
-        // when
         PagedResult<Message> result = messageRepository.findByChatId(999L, pageable);
 
-        // then
         assertThat(result.getContent()).isEmpty();
         assertThat(result.getTotalElements()).isZero();
     }
 
     @Test
     void shouldFindMessagesBySenderId() {
-        // given
         PagingRequest pageable = new PagingRequest(0, 10);
 
-        // when
         PagedResult<Message> result = messageRepository.findBySenderId(sender.getId(), pageable);
 
-        // then
         assertThat(result.getContent()).hasSize(1);
         assertThat(result.getContent().get(0).getSender().getId()).isEqualTo(sender.getId());
         assertThat(result.getContent().get(0).getContent()).isEqualTo("First message");
@@ -178,20 +160,16 @@ public class MessageRepositoryTest {
 
     @Test
     void shouldReturnEmptyPageForNonExistentSender() {
-        // given
         PagingRequest pageable = new PagingRequest(0, 10);
 
-        // when
         PagedResult<Message> result = messageRepository.findBySenderId(999L, pageable);
 
-        // then
         assertThat(result.getContent()).isEmpty();
         assertThat(result.getTotalElements()).isZero();
     }
 
     @Test
     void shouldSaveMessage() {
-        // given – используем управляемые сущности
         Chat managedChat = entityManager.find(Chat.class, chat.getId());
         User managedSender = entityManager.find(User.class, sender.getId());
 
@@ -199,15 +177,13 @@ public class MessageRepositoryTest {
                 .chat(managedChat)
                 .sender(managedSender)
                 .content("New message")
-                .createdAt(LocalDateTime.now())   // обязательно, т.к. поле not null
+                .createdAt(LocalDateTime.now())
                 .build();
 
-        // when
         Message saved = messageRepository.save(newMessage);
         entityManager.flush();
         entityManager.clear();
 
-        // then
         Optional<Message> found = messageRepository.findById(saved.getId());
         assertThat(found).isPresent();
         assertThat(found.get().getContent()).isEqualTo("New message");
@@ -216,16 +192,13 @@ public class MessageRepositoryTest {
 
     @Test
     void shouldUpdateMessage() {
-        // given
         String newContent = "Updated content";
 
-        // when
         message1.setContent(newContent);
         messageRepository.update(message1);
         entityManager.flush();
         entityManager.clear();
 
-        // then
         Optional<Message> found = messageRepository.findById(message1.getId());
         assertThat(found).isPresent();
         assertThat(found.get().getContent()).isEqualTo(newContent);
@@ -233,26 +206,22 @@ public class MessageRepositoryTest {
 
     @Test
     void shouldDeleteMessage() {
-        // when
         messageRepository.delete(message1);
         entityManager.flush();
         entityManager.clear();
 
-        // then
         Optional<Message> found = messageRepository.findById(message1.getId());
         assertThat(found).isEmpty();
     }
 
     @Test
     void shouldCheckMessageExistsById() {
-        // when & then
         assertThat(messageRepository.existsById(message1.getId())).isTrue();
         assertThat(messageRepository.existsById(999L)).isFalse();
     }
 
     @Test
     void shouldPaginateCorrectlyWithMultiplePages() {
-        // given - создаем дополнительные сообщения
         for (int i = 3; i <= 12; i++) {
             Message msg = Message.builder()
                     .chat(chat)
@@ -266,12 +235,9 @@ public class MessageRepositoryTest {
 
         PagingRequest firstPage = new PagingRequest(0, 5);
         PagingRequest secondPage = new PagingRequest(1, 5);
-
-        // when
         PagedResult<Message> firstResult = messageRepository.findByChatId(chat.getId(), firstPage);
         PagedResult<Message> secondResult = messageRepository.findByChatId(chat.getId(), secondPage);
 
-        // then
         assertThat(firstResult.getContent()).hasSize(5);
         assertThat(secondResult.getContent()).hasSize(5);
         assertThat(firstResult.getTotalElements()).isEqualTo(12);

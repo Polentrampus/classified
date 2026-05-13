@@ -66,7 +66,6 @@ public class AdCommentRepositoryTest {
                 .build();
         entityManager.persist(buyer);
 
-        // Создаем город и адрес
         City city = new City();
         city.setName("Moscow");
         entityManager.persist(city);
@@ -77,7 +76,6 @@ public class AdCommentRepositoryTest {
                 .build();
         entityManager.persist(address);
 
-        // Создаем объявления
         Ad ad1 = Ad.builder()
                 .title("First Ad")
                 .description("Description 1")
@@ -98,7 +96,6 @@ public class AdCommentRepositoryTest {
                 .build();
         entityManager.persist(ad2);
 
-        // Создаем заказы
         order = Order.builder()
                 .ad(ad1)
                 .buyer(buyer)
@@ -132,7 +129,6 @@ public class AdCommentRepositoryTest {
 
     @Test
     void shouldFindCommentsByAuthorId() {
-        // when
         comment1 = AdComment.builder()
                 .order(order)
                 .rating(5)
@@ -142,23 +138,19 @@ public class AdCommentRepositoryTest {
 
         List<AdComment> comments = adCommentRepository.findByAuthorId(buyer.getId());
 
-        // then
         assertThat(comments).hasSize(2);
         assertThat(comments).allMatch(c -> c.getOrder().getBuyer().getId().equals(buyer.getId()));
     }
 
     @Test
     void shouldReturnEmptyListForNonExistentAuthor() {
-        // when
         List<AdComment> comments = adCommentRepository.findByAuthorId(999L);
 
-        // then
         assertThat(comments).isEmpty();
     }
 
     @Test
     void shouldFindCommentsByTargetUserId() {
-        // when
         comment1 = AdComment.builder()
                 .order(order)
                 .rating(5)
@@ -167,7 +159,6 @@ public class AdCommentRepositoryTest {
         entityManager.persist(comment1);
         List<AdComment> comments = adCommentRepository.findByTargetUserId(seller.getId());
 
-        // then
         assertThat(comments).hasSize(2);
         assertThat(comments).allMatch(c -> c.getOrder().getSeller().getId().equals(seller.getId()));
     }
@@ -180,10 +171,8 @@ public class AdCommentRepositoryTest {
                 .content("Excellent product!")
                 .build();
         entityManager.persist(comment1);
-        // when
         List<AdComment> comments = adCommentRepository.findByAdId(order.getAd().getId());
 
-        // then
         assertThat(comments).hasSize(1);
         assertThat(comments.get(0).getOrder().getAd().getId()).isEqualTo(order.getAd().getId());
     }
@@ -196,19 +185,15 @@ public class AdCommentRepositoryTest {
                 .content("Excellent product!")
                 .build();
         entityManager.persist(comment1);
-        // when
         Double averageRating = adCommentRepository.getAverageRatingForUser(seller.getId());
 
-        // then
         assertThat(averageRating).isEqualTo(4.0); // (5 + 3) / 2
     }
 
     @Test
     void shouldReturnZeroAverageRatingForUserWithoutComments() {
-        // when
         Double averageRating = adCommentRepository.getAverageRatingForUser(999L);
 
-        // then
         assertThat(averageRating).isEqualTo(0.0);
     }
 
@@ -220,37 +205,30 @@ public class AdCommentRepositoryTest {
                 .content("Excellent product!")
                 .build();
         entityManager.persist(comment1);
-        // when
         Double averageRating = adCommentRepository.getAverageRatingForAd(order.getAd().getId());
 
-        // then
         assertThat(averageRating).isEqualTo(5.0);
     }
 
     @Test
     void shouldReturnZeroAverageRatingForAdWithoutComments() {
-        // when
         Double averageRating = adCommentRepository.getAverageRatingForAd(999L);
 
-        // then
         assertThat(averageRating).isEqualTo(0.0);
     }
 
     @Test
     void shouldSaveComment() {
-        // given
         AdComment newComment = AdComment.builder()
                 .order(order)
                 .rating(4)
                 .content("Nice product")
                 .build();
 
-        // when
         AdComment saved = adCommentRepository.save(newComment);
         entityManager.flush();
         entityManager.clear();
 
-        // then
         Optional<AdComment> found = adCommentRepository.findById(saved.getId());
         assertThat(found).isPresent();
         assertThat(found.get().getRating()).isEqualTo(4);
@@ -259,7 +237,6 @@ public class AdCommentRepositoryTest {
 
     @Test
     void shouldUpdateComment() {
-        // given
         String newContent = "Updated review content";
 
         comment1 = AdComment.builder()
@@ -268,14 +245,12 @@ public class AdCommentRepositoryTest {
                 .content("Excellent product!")
                 .build();
         entityManager.persist(comment1);
-        // when
         comment1.setContent(newContent);
         comment1.setRating(4);
         adCommentRepository.update(comment1);
         entityManager.flush();
         entityManager.clear();
 
-        // then
         Optional<AdComment> found = adCommentRepository.findById(comment1.getId());
         assertThat(found).isPresent();
         assertThat(found.get().getContent()).isEqualTo(newContent);

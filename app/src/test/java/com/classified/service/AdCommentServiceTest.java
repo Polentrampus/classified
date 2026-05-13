@@ -75,16 +75,13 @@ class AdCommentServiceTest {
 
     @Test
     void shouldCreateCommentForCompletedOrder() {
-        // given
         when(orderRepository.findById(5L)).thenReturn(Optional.of(order));
         when(adCommentMapper.toEntity(any(AdCommentCreateRequest.class))).thenReturn(comment);
         when(adCommentRepository.save(any(AdComment.class))).thenReturn(comment);
         when(adCommentMapper.toResponse(any(AdComment.class))).thenReturn(commentResponse);
 
-        // when
         AdCommentResponse result = adCommentService.create(createRequest);
 
-        // then
         assertThat(result).isNotNull();
         assertThat(result.getRating()).isEqualTo(5);
         assertThat(result.getContent()).isEqualTo("Excellent!");
@@ -93,11 +90,9 @@ class AdCommentServiceTest {
 
     @Test
     void shouldThrowExceptionWhenOrderNotCompleted() {
-        // given
         Order pendingOrder = Order.builder().id(5L).status(OrderStatus.PENDING).build();
         when(orderRepository.findById(5L)).thenReturn(Optional.of(pendingOrder));
 
-        // when & then
         assertThatThrownBy(() -> adCommentService.create(createRequest))
                 .isInstanceOf(BusinessException.class)
                 .hasFieldOrPropertyWithValue("errorCode", ErrorCode.INVALID_OPERATION)
@@ -106,10 +101,8 @@ class AdCommentServiceTest {
 
     @Test
     void shouldThrowExceptionWhenOrderNotFound() {
-        // given
         when(orderRepository.findById(999L)).thenReturn(Optional.empty());
 
-        // when & then
         assertThatThrownBy(() -> adCommentService.create(
                 AdCommentCreateRequest.builder().orderId(999L).rating(3).content("Ok").build()))
                 .isInstanceOf(ResourceNotFoundException.class);
@@ -117,26 +110,20 @@ class AdCommentServiceTest {
 
     @Test
     void shouldGetAverageRatingForUser() {
-        // given
         when(adCommentRepository.getAverageRatingForUser(1L)).thenReturn(4.5);
 
-        // when
         Double rating = adCommentService.getAverageRatingForUser(1L);
 
-        // then
         assertThat(rating).isEqualTo(4.5);
     }
 
     @Test
     void shouldGetCommentsByAdId() {
-        // given
         when(adCommentRepository.findByAdId(10L)).thenReturn(List.of(comment));
         when(adCommentMapper.toResponse(any(AdComment.class))).thenReturn(commentResponse);
 
-        // when
         List<AdCommentResponse> result = adCommentService.getByAdId(10L);
 
-        // then
         assertThat(result).hasSize(1);
     }
     @Test

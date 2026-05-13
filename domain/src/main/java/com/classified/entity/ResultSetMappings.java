@@ -20,7 +20,7 @@ import java.math.BigDecimal;
                 targetClass = UserStatisticsDto.class,
                 columns = {
                         @ColumnResult(name = "user_id", type = Long.class),
-                        @ColumnResult(name = "user_name", type = String.class),
+                        @ColumnResult(name = "name", type = String.class),
                         @ColumnResult(name = "rating", type = BigDecimal.class),
                         @ColumnResult(name = "total_ads", type = Long.class),
                         @ColumnResult(name = "total_sales", type = Long.class),

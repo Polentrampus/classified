@@ -119,16 +119,13 @@ class AdServiceTest {
 
     @Test
     void shouldCreateAd() {
-        // given
         when(adMapper.toEntity(any(AdCreateRequest.class))).thenReturn(ad);
         when(userRepository.findById(1L)).thenReturn(Optional.of(seller));
         when(adRepository.save(any(Ad.class))).thenReturn(ad);
         when(adMapper.toResponse(any(Ad.class))).thenReturn(adResponse);
 
-        // when
         AdResponse result = adService.createAd(createRequest, sellerDetails);
 
-        // then
         assertThat(result).isNotNull();
         assertThat(result.getTitle()).isEqualTo("Test Ad");
         verify(adRepository).save(any(Ad.class));
@@ -136,33 +133,27 @@ class AdServiceTest {
 
     @Test
     void shouldThrowExceptionWhenSellerNotFound() {
-        // given
         when(adMapper.toEntity(any(AdCreateRequest.class))).thenReturn(ad);
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
-        // when & then
         assertThatThrownBy(() -> adService.createAd(createRequest, sellerDetails))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
     void shouldUpdateOwnAd() {
-        // given
         when(adRepository.findById(10L)).thenReturn(Optional.of(ad));
         doNothing().when(adMapper).updateEntityFromRequest(any(), any());
         when(adMapper.toResponse(any(Ad.class))).thenReturn(adResponse);
 
-        // when
         AdResponse result = adService.updateAd(10L, updateRequest, sellerDetails);
 
-        // then
         assertThat(result).isNotNull();
         verify(adMapper).updateEntityFromRequest(updateRequest, ad);
     }
 
     @Test
     void shouldSearchAds() {
-        // given
         AdSearchCriteria criteria = new AdSearchCriteria();
         criteria.setTitle("Test");
         PagingRequest pageable = new PagingRequest(0, 10);
@@ -172,55 +163,43 @@ class AdServiceTest {
                 .thenReturn(pagedResult);
         when(adMapper.toResponse(any(Ad.class))).thenReturn(adResponse);
 
-        // when
         PagedResult<AdResponse> result = adService.searchAds(criteria, pageable);
 
-        // then
         assertThat(result.getContent()).hasSize(1);
         assertThat(result.getTotalElements()).isEqualTo(1L);
     }
 
     @Test
     void shouldGetAllAdsBySellerId() {
-        // given
         when(adRepository.findBySellerId(1L)).thenReturn(List.of(ad));
         when(adMapper.toResponse(any(Ad.class))).thenReturn(adResponse);
 
-        // when
         List<AdResponse> result = adService.getAllAdBySellerId(1L);
 
-        // then
         assertThat(result).hasSize(1);
     }
 
     @Test
     void shouldThrowAccessDeniedWhenUpdatingForeignAd() {
-        // given
         when(adRepository.findById(10L)).thenReturn(Optional.of(ad));
 
-        // when & then (otherUserDetails не владелец)
         assertThatThrownBy(() -> adService.updateAd(10L, updateRequest, otherUserDetails))
                 .isInstanceOf(AccessDeniedException.class);
     }
 
     @Test
     void shouldDeleteOwnAd() {
-        // given
         when(adRepository.findById(10L)).thenReturn(Optional.of(ad));
 
-        // when
         adService.deleteAd(10L, sellerDetails);
 
-        // then
         verify(adRepository).delete(ad);
     }
 
     @Test
     void shouldThrowAccessDeniedWhenDeletingForeignAd() {
-        // given
         when(adRepository.findById(10L)).thenReturn(Optional.of(ad));
 
-        // when & then
         assertThatThrownBy(() -> adService.deleteAd(10L, otherUserDetails))
                 .isInstanceOf(AccessDeniedException.class);
 
@@ -229,46 +208,36 @@ class AdServiceTest {
 
     @Test
     void shouldGetAd() {
-        // given
         when(adRepository.findById(10L)).thenReturn(Optional.of(ad));
         when(adMapper.toResponse(ad)).thenReturn(adResponse);
 
-        // when
         AdResponse result = adService.getAd(10L);
 
-        // then
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(10L);
     }
 
     @Test
     void shouldThrowExceptionWhenAdNotFound() {
-        // given
         when(adRepository.findById(999L)).thenReturn(Optional.empty());
 
-        // when & then
         assertThatThrownBy(() -> adService.getAd(999L))
                 .isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
     void shouldChangeAdStatusAsOwner() {
-        // given
         when(adRepository.findById(10L)).thenReturn(Optional.of(ad));
 
-        // when
         adService.changeAdStatus(10L, AdStatus.SOLD, sellerDetails);
 
-        // then
         assertThat(ad.getStatus()).isEqualTo(AdStatus.SOLD);
     }
 
     @Test
     void shouldThrowAccessDeniedWhenChangingStatusOfForeignAd() {
-        // given
         when(adRepository.findById(10L)).thenReturn(Optional.of(ad));
 
-        // when & then
         assertThatThrownBy(() -> adService.changeAdStatus(10L, AdStatus.SOLD, otherUserDetails))
                 .isInstanceOf(AccessDeniedException.class);
     }

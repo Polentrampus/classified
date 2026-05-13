@@ -34,16 +34,11 @@ public class MessageService {
 
     @Transactional
     public MessageResponse create(MessageCreateRequest request, UserDetailsImpl userDetails) {
-        log.info("Создание сообщения: chatId={}, senderId={}", request.getChatId(), request.getSenderId());
+        log.info("Создание сообщения: chatId={}, senderId={}", request.getChatId(), userDetails.getId());
         log.debug("Контент сообщения: {}", request.getContent());
 
-        if(!request.getSenderId().equals(userDetails.getId())) {
-            log.warn("Отказ в доступе: senderId из запроса {} не совпадает с текущим пользователем {}",
-                    request.getSenderId(), userDetails.getId());
-            throw new AccessDeniedException("You can only edit your own ads");
-        }
         Message message = messageMapper.toEntity(request);
-        updateRelatedEntities(request.getChatId(), request.getSenderId(), message);
+        updateRelatedEntities(request.getChatId(), userDetails.getId(), message);
         MessageResponse response = messageMapper.toResponse(messageRepository.save(message));
         log.info("Сообщение создано: id={}, chatId={}", response.getId(), response.getChatId());
         return response;
