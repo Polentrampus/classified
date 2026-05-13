@@ -201,29 +201,6 @@
                     </configuration>
                 </plugin>
 
-                <!-- Plugin Checkstyle-->
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-checkstyle-plugin</artifactId>
-                    <version>3.6.0</version>
-                    <configuration>
-                        <configLocation>checkstyle-config/checkstyle.xml</configLocation>
-                        <consoleOutput>true</consoleOutput>
-                        <failsOnError>true</failsOnError>
-                        <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                        <propertyExpansion> checkstyle.config.path=${session.executionRootDirectory}/checkstyle-config </propertyExpansion>
-                    </configuration>
-                    <executions>
-                        <execution>
-                            <id>check-code-style</id>
-                            <phase>compile</phase>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>

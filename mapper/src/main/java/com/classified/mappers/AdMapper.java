@@ -18,12 +18,13 @@ public interface AdMapper {
     @Mapping(target = "seller", ignore = true)
     @Mapping(target = "address", ignore = true)
     @Mapping(target = "adType", ignore = true)
-    @Mapping(target = "images", ignore = true)
+    @Mapping(target = "images", source = "images")
     Ad toEntity(AdCreateRequest request);
 
     @Mapping(target = "sellerId", source = "seller.id")
     @Mapping(target = "addressId", source = "address.id")
     @Mapping(target = "adTypeId", source = "adType.id")
+    @Mapping(target = "images", source = "images")
     AdResponse toResponse(Ad ad);
 
     @Mapping(target = "id", ignore = true)

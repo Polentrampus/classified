@@ -129,7 +129,7 @@ public class AdRepositoryImpl extends AbstractRepository<Ad, Long> implements Ad
         // Добавляем условия к join
         promotionJoin.on(
                 cb.and(
-                        cb.isTrue(promotionJoin.get("isActive")),
+                        cb.isTrue(promotionJoin.get("active")),
                         cb.greaterThan(promotionJoin.get("endDate"), cb.currentTimestamp())
                 )
         );

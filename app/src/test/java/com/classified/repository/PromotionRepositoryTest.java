@@ -109,7 +109,7 @@ public class PromotionRepositoryTest {
 
         assertThat(found).isPresent();
         assertThat(found.get().getType()).isEqualTo(PromotionType.TOP_7_DAYS);
-        assertThat(found.get().isActive()).isTrue();
+        assertThat(found.get().getActive()).isTrue();
     }
 
     @Test
@@ -127,7 +127,7 @@ public class PromotionRepositoryTest {
 
         Optional<Promotion> activeFound = promotionRepository.findActiveByAdId(ad1.getId());
         assertThat(activeFound).isPresent();
-        assertThat(activeFound.get().isActive()).isTrue();
+        assertThat(activeFound.get().getActive()).isTrue();
     }
 
     @Test
@@ -138,11 +138,11 @@ public class PromotionRepositoryTest {
 
         Optional<Promotion> expired = promotionRepository.findById(expiredPromotion.getId());
         assertThat(expired).isPresent();
-        assertThat(expired.get().isActive()).isFalse();
+        assertThat(expired.get().getActive()).isFalse();
 
         Optional<Promotion> active = promotionRepository.findById(activePromotion.getId());
         assertThat(active).isPresent();
-        assertThat(active.get().isActive()).isTrue();
+        assertThat(active.get().getActive()).isTrue();
     }
 
     @Test
@@ -161,7 +161,7 @@ public class PromotionRepositoryTest {
         Optional<Promotion> found = promotionRepository.findById(saved.getId());
         assertThat(found).isPresent();
         assertThat(found.get().getType()).isEqualTo(PromotionType.HIGHLIGHT);
-        assertThat(found.get().isActive()).isTrue();
+        assertThat(found.get().getActive()).isTrue();
     }
 
     @Test
@@ -189,7 +189,7 @@ public class PromotionRepositoryTest {
 
         Optional<Promotion> found = promotionRepository.findById(activePromotion.getId());
         assertThat(found).isPresent();
-        assertThat(found.get().isActive()).isFalse();
+        assertThat(found.get().getActive()).isFalse();
     }
 
     @Test

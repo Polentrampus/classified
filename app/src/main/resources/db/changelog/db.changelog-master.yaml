@@ -5,5 +5,4 @@ databaseChangeLog:
       file: db/changelog/changes/v.1.0.1_insert_script.sql
   - include:
       file: db/changelog/changes/v.1.0.2_insert_type_and_category_script.sql
-  - include:
-      file: db/changelog/changes/v.1.0.3_insert_admin_script.sql
+

@@ -1,6 +1,7 @@
 package com.classified.dto.ad;
 
 import com.classified.dto.AdStatus;
+import com.classified.dto.image.AdImageRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
@@ -23,4 +25,5 @@ public class AdCreateRequest {
     private AdStatus adStatus;
     private Long sellerId;
     private Long addressId;
+    private List<AdImageRequest> images;
 }

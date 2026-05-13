@@ -123,7 +123,7 @@ class PromotionServiceTest {
 
         promotionService.deactivatePromotion(10L, adminDetails);
 
-        assertThat(promotion.isActive()).isFalse();
+        assertThat(promotion.getActive()).isFalse();
     }
 
     @Test
@@ -153,7 +153,7 @@ class PromotionServiceTest {
         PromotionResponse result = promotionService.getActiveByAdId(10L);
 
         assertThat(result).isNotNull();
-        assertThat(result.isActive()).isTrue();
+        assertThat(result.getActive()).isTrue();
     }
 
     @Test
@@ -170,7 +170,7 @@ class PromotionServiceTest {
 
         promotionService.deactivatePromotion(10L, sellerDetails);
 
-        assertThat(promotion.isActive()).isFalse();
+        assertThat(promotion.getActive()).isFalse();
     }
 
     @Test

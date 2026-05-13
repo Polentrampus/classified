@@ -35,6 +35,12 @@ public class ChatService {
     public ChatResponse create(ChatCreateRequest request, UserDetailsImpl userDetails) {
         log.info("Создание чата: adId={}, userId={}", request.getAdId(), request.getUserId());
 
+        if (!request.getUserId().equals(userDetails.getId())) {
+            log.warn("Отказ в доступе: userId в запросе ({}) не совпадает с текущим пользователем ({})",
+                    request.getUserId(), userDetails.getId());
+            throw new AccessDeniedException("You can only create chats for yourself");
+        }
+
         Optional<Chat> existing = chatRepository.findByAdIdAndBuyerId(request.getAdId(), request.getUserId());
         if (existing.isPresent()) {
             log.info("Чат уже существует: id={}", existing.get().getId());
@@ -67,7 +73,6 @@ public class ChatService {
             chat.addParticipant(user);
             log.debug("Добавлен пользователь id={} как участник чата", userId);
         }
-        updateRelatedEntities(request.getAdId(), request.getUserId(), chat);
         ChatResponse response = chatMapper.toResponse(chat);
         log.info("Чат создан: id={}, adId={}", response.getId(), response.getAdId());
         return response;

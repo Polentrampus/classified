@@ -21,7 +21,7 @@ public class PromotionRepositoryImpl extends AbstractRepository<Promotion, Long>
                         return Optional.of(
                                 em.createQuery(
                                                 "SELECT p FROM Promotion p WHERE p.ad.id = :adId " +
-                                                        "AND p.isActive = true AND p.endDate > CURRENT_TIMESTAMP " +
+                                                        "AND p.active = true AND p.endDate > CURRENT_TIMESTAMP " +
                                                         "ORDER BY p.endDate DESC", Promotion.class)
                                         .setParameter("adId", adId)
                                         .setMaxResults(1)
@@ -36,8 +36,8 @@ public class PromotionRepositoryImpl extends AbstractRepository<Promotion, Long>
     @Override
     public void deactivateExpiredPromotions() {
         execute("deactivateExpired", em -> {
-            em.createQuery("UPDATE Promotion p SET p.isActive = false " +
-                            "WHERE p.isActive = true AND p.endDate < CURRENT_TIMESTAMP")
+            em.createQuery("UPDATE Promotion p SET p.active = false " +
+                            "WHERE p.active = true AND p.endDate < CURRENT_TIMESTAMP")
                     .executeUpdate();
         }, "deactivateExpiredPromotions");
     }

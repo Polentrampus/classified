@@ -49,6 +49,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/ads/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/users/{id}").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/comments/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/categories/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/product-types/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/ad-types/**").authenticated()
 
                         // Только ADMIN
                         .requestMatchers("/api/roles/**").hasRole("ADMIN")

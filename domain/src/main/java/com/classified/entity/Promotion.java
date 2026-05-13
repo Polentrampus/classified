@@ -44,7 +44,7 @@ public class Promotion {
     private LocalDateTime endDate;
 
     @Column(name = "active", nullable = false)
-    private boolean active;
+    private Boolean active;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)

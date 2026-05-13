@@ -113,7 +113,9 @@ public class OrderService {
         log.info("Смена статуса заказа: adId={}, новый статус={}, userId={}", adId, status, userDetails.getId());
 
         Order order = orderRepository.findByAdId(adId)
-                .stream().max(Comparator.comparing(Order::getCompletedAt))
+                .stream()
+                .max(Comparator.comparing(Order::getCompletedAt,
+                        Comparator.nullsLast(Comparator.naturalOrder())))
                 .orElseThrow(() -> {
                     log.warn("Заказы для adId={} не найдены", adId);
                     return new ResourceNotFoundException("Order", "adId", adId);

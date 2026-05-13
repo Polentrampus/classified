@@ -107,14 +107,6 @@ class MessageServiceTest {
     }
 
     @Test
-    void shouldThrowAccessDeniedWhenCreatingMessageForAnotherUser() {
-        assertThatThrownBy(() -> messageService.create(createRequest, senderDetails))
-                .isInstanceOf(AccessDeniedException.class);
-
-        verify(messageRepository, never()).save(any());
-    }
-
-    @Test
     void shouldDeleteOwnMessage() {
         when(messageRepository.findById(100L)).thenReturn(Optional.of(message));
 

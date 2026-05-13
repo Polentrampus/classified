@@ -1,24 +1,24 @@
 package com.classified.impl;
 
-import com.classified.entity.AdCategory;
-import com.classified.repository.AdCategoryRepository;
+import com.classified.entity.ProductType;
 import org.springframework.stereotype.Repository;
+import com.classified.repository.ProductTypeRepository;
 
 import java.util.Optional;
 
 @Repository
-public class AdCategoryRepositoryImpl extends AbstractRepository<AdCategory, Long> implements AdCategoryRepository {
+public class ProductTypeRepositoryImpl extends AbstractRepository<ProductType, Long> implements ProductTypeRepository {
 
-    protected AdCategoryRepositoryImpl() {
-        super(AdCategory.class);
+    protected ProductTypeRepositoryImpl() {
+        super(ProductType.class);
     }
 
     @Override
-    public Optional<AdCategory> findByName(String name) {
+    public Optional<ProductType> findByName(String name) {
         return executeWithResult("findByName", em -> {
             try {
                 return Optional.of(
-                        em.createQuery("SELECT ac FROM AdCategory ac WHERE ac.name = :name", AdCategory.class)
+                        em.createQuery("SELECT pt FROM ProductType pt WHERE pt.name = :name", ProductType.class)
                                 .setParameter("name", name)
                                 .getSingleResult()
                 );
@@ -32,7 +32,7 @@ public class AdCategoryRepositoryImpl extends AbstractRepository<AdCategory, Lon
     public boolean existsByName(String name) {
         return executeWithResult("existsByName", em -> {
             Long count = em.createQuery(
-                            "SELECT COUNT(ac) FROM AdCategory ac WHERE ac.name = :name", Long.class)
+                            "SELECT COUNT(pt) FROM ProductType pt WHERE pt.name = :name", Long.class)
                     .setParameter("name", name)
                     .getSingleResult();
             return count > 0;
